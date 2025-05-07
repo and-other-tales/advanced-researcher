@@ -1,0 +1,75 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA', '.']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'chat-langchain'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--env-vars-file'
+      - '.env.cloud.yaml'
+      - '--min-instances'
+      - '1'
+      - '--add-cloudsql-instances'
+      - '${_CLOUDSQL_CONNECTION_NAME}'
+      - '--execution-environment'
+      - 'gen2'
+      - '--cpu'
+      - '1'
+      - '--memory'
+      - '2Gi'
+      - '--volumes'
+      - 'name=data,path=/data'
+
+  # Update ingestion job
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'jobs'
+      - 'update'
+      - 'chat-langchain-ingest'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--command'
+      - 'python'
+      - '--args'
+      - '-m,backend.local_ingest'
+      - '--env-vars-file'
+      - '.env.cloud.yaml'
+      - '--add-cloudsql-instances'
+      - '${_CLOUDSQL_CONNECTION_NAME}'
+      - '--execution-environment'
+      - 'gen2'
+      - '--cpu'
+      - '1'
+      - '--memory'
+      - '2Gi'
+      - '--volumes'
+      - 'name=data,path=/data'
+    id: 'update-job'
+
+images:
+  - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+
+substitutions:
+  _CLOUDSQL_CONNECTION_NAME: '' # Set this in your Cloud Build trigger
+
+timeout: '1800s'
