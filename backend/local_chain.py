@@ -1,6 +1,7 @@
 """Chain implementation for local deployment."""
 import asyncio
 import os
+import logging
 from operator import itemgetter
 from typing import Dict, List, Optional, Sequence, Any
 
@@ -28,7 +29,6 @@ from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
 from langsmith import Client
-import os
 
 # Import backend modules with error handling
 try:

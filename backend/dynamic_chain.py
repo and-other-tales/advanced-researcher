@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Union
 from langchain_core.documents import Document
 from langchain_core.language_models import LanguageModelLike
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import Runnable, RunnablePassthrough
+from langchain_core.runnables import Runnable, RunnablePassthrough, chain
 from pydantic import BaseModel
 
 from backend.dynamic_routes import get_knowledge_base_by_id, get_knowledge_bases
