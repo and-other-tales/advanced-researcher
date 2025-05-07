@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml poetry.lock ./
 RUN pip install --no-cache-dir poetry==1.6.1 \
     && poetry config virtualenvs.create false \
+    && poetry lock --no-update \
     && poetry install --without lint \
     && pip uninstall -y poetry
 
