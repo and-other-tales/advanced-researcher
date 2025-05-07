@@ -9,35 +9,40 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     curl \
+    git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY pyproject.toml poetry.lock ./
-RUN pip install --no-cache-dir poetry==1.6.1 \
-    && poetry config virtualenvs.create false \
-    && poetry lock --no-update \
-    && poetry install --without lint \
-    && pip uninstall -y poetry
+# Copy requirements file first for better caching
+COPY requirements.txt ./
 
-# Install additional dependencies for new features
-RUN pip install --no-cache-dir duckduckgo_search tavily-python beautifulsoup4 lxml
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Install additional dependencies for new features if not already in requirements.txt
+RUN pip install --no-cache-dir lxml
 
 # Create data directory for persistent storage
 RUN mkdir -p /data && chmod 777 /data
 
 # Copy application code
-COPY backend ./backend
+COPY backend/ ./backend/
 COPY frontend/app/utils/constants.tsx ./frontend/app/utils/constants.tsx
 COPY main.py .env.example ./
+
+# Ensure backend/utils directory exists
+RUN mkdir -p backend/utils
 
 # Default environment variables
 ENV DATA_MOUNT_PATH=/data
 ENV HOST=0.0.0.0
 ENV PORT=8080
+ENV PYTHONUNBUFFERED=1
+ENV USE_LOCAL=true
 
 # Expose port
 EXPOSE 8080
 
 # Command to run the application
-CMD ["python", "-m", "main"]
+CMD ["python", "main.py"]
