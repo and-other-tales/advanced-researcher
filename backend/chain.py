@@ -1,7 +1,8 @@
 import asyncio
 import os
+import logging
 from operator import itemgetter
-from typing import Dict, List, Optional, Sequence, Any
+from typing import Dict, List, Optional, Sequence, Any, Union
 
 import weaviate
 from constants import WEAVIATE_DOCS_INDEX_NAME
@@ -38,6 +39,8 @@ from langsmith import Client
 
 from backend.dynamic_chain import ChatRequestWithKB, create_dynamic_chain
 from backend.auto_learn import detect_insufficient_information, register_learning_task
+from backend.deep_research_integration import create_deep_research_runnable
+from backend.feature_integration import create_feature_integration_runnable
 
 RESPONSE_TEMPLATE = """\
 You are an expert programmer and problem-solver, tasked with answering any question \
@@ -193,15 +196,22 @@ def serialize_history(request: ChatRequest):
 
 
 def create_chain(llm: LanguageModelLike, retriever: BaseRetriever) -> Runnable:
+    # Create feature components
+    deep_research = create_deep_research_runnable()
+    feature_integration = create_feature_integration_runnable()
+    
+    # Create standard retrieval chain
     retriever_chain = create_retriever_chain(
         llm,
         retriever,
     ).with_config(run_name="FindDocs")
+    
     context = (
         RunnablePassthrough.assign(docs=retriever_chain)
         .assign(context=lambda x: format_docs(x["docs"]))
         .with_config(run_name="RetrieveDocs")
     )
+    
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", RESPONSE_TEMPLATE),
@@ -237,6 +247,10 @@ def create_chain(llm: LanguageModelLike, retriever: BaseRetriever) -> Runnable:
     
     # Add auto-learning capability when information is insufficient
     def check_and_learn(inputs: Dict[str, Any]) -> Dict[str, Any]:
+        # Skip auto-learning if another feature was used
+        if inputs.get("used_feature") or inputs.get("used_deep_research"):
+            return inputs
+            
         response = inputs.get("response", "")
         question = inputs.get("question", "")
         
@@ -255,18 +269,54 @@ def create_chain(llm: LanguageModelLike, retriever: BaseRetriever) -> Runnable:
         
         return inputs
     
-    chain = (
+    # Function to extract the final response
+    def extract_response(inputs: Dict[str, Any]) -> str:
+        return inputs.get("response", "")
+    
+    # Standard RAG chain
+    standard_chain = (
         RunnablePassthrough.assign(chat_history=serialize_history)
         | context
         | response_synthesizer
     )
     
-    # Add learning check to the chain
-    return (
-        RunnablePassthrough.assign(response=chain)
+    # Create an async router function to handle all special features
+    @chain
+    async def router_chain(inputs: Dict[str, Any], config: Dict[str, Any] = None) -> Dict[str, Any]:
+        question = inputs.get("question", "")
+        user_id = config.get("configurable", {}).get("user_id") if config else None
+        
+        # Update config with the LLM for feature handlers
+        feature_config = {**config} if config else {}
+        feature_config["llm"] = llm
+        
+        # First check for dynamic ingestion and dataset creation
+        feature_result = await feature_integration.ainvoke(inputs, feature_config)
+        
+        # If a feature was used and handled, return its results
+        if feature_result.get("used_feature", False):
+            return {"response": feature_result.get("response"), "used_feature": True}
+            
+        # Special case for deep research - which has its own handling
+        feature_type = feature_result.get("feature_type")
+        if feature_type == "deep_research":
+            # Use deep research
+            research_result = await deep_research.ainvoke(inputs, config)
+            if research_result.get("used_deep_research", False):
+                return research_result
+        
+        # Otherwise, use standard RAG chain
+        standard_result = await standard_chain.ainvoke(inputs)
+        return {"response": standard_result, "used_feature": False, "used_deep_research": False}
+    
+    # Final chain with router, auto-learning, and response extraction
+    chain = (
+        router_chain
         | RunnableLambda(check_and_learn)
-        | itemgetter("response")
+        | RunnableLambda(extract_response)
     )
+    
+    return chain
 
 
 gpt_3_5 = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, streaming=True)

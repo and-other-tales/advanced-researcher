@@ -21,8 +21,20 @@ import {
   InputGroup,
   InputRightElement,
   Spinner,
+  Box,
+  Stack,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  Radio,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Text,
+  Tooltip,
 } from "@chakra-ui/react";
-import { ArrowUpIcon } from "@chakra-ui/icons";
+import { ArrowUpIcon, InfoIcon } from "@chakra-ui/icons";
 import { Select, Link } from "@chakra-ui/react";
 import { Source } from "./SourceBubble";
 import { apiBaseUrl } from "../utils/constants";
@@ -54,11 +66,54 @@ export function ChatWindow(props: { conversationId: string }) {
     searchParams.get("advanced_verification") === "true"
   );
   const [llmIsLoading, setLlmIsLoading] = useState(true);
+  
+  // Deep research configuration
+  const [showDeepResearchConfig, setShowDeepResearchConfig] = useState(false);
+  const [researchDepthLevel, setResearchDepthLevel] = useState(
+    searchParams.get("research_depth") ?? "general_reference"
+  );
+  const [minDocuments, setMinDocuments] = useState(20);
+  const [maxDocuments, setMaxDocuments] = useState(50);
+  const [minSites, setMinSites] = useState(10);
+  const [maxSites, setMaxSites] = useState(30);
+  
   useEffect(() => {
     setLlm(searchParams.get("llm") ?? defaultLlmValue);
     setAdvancedVerification(searchParams.get("advanced_verification") === "true");
+    
+    // Set research depth from URL params if available
+    const depthParam = searchParams.get("research_depth");
+    if (depthParam) {
+      setResearchDepthLevel(depthParam);
+      updateDocumentAndSiteCounts(depthParam);
+    }
+    
     setLlmIsLoading(false);
   }, []);
+  
+  // Update document and site counts based on research depth level
+  const updateDocumentAndSiteCounts = (depthLevel: string) => {
+    switch (depthLevel) {
+      case "general_reference":
+        setMinDocuments(20);
+        setMaxDocuments(50);
+        setMinSites(10);
+        setMaxSites(30);
+        break;
+      case "analysis_insight":
+        setMinDocuments(50);
+        setMaxDocuments(150);
+        setMinSites(30);
+        setMaxSites(75);
+        break;
+      case "academic_research":
+        setMinDocuments(100);
+        setMaxDocuments(500);
+        setMinSites(50);
+        setMaxSites(150);
+        break;
+    }
+  };
 
   const [chatHistory, setChatHistory] = useState<
     { human: string; ai: string }[]
@@ -125,12 +180,18 @@ export function ChatWindow(props: { conversationId: string }) {
           configurable: {
             llm: llmDisplayName,
             advanced_verification: advancedVerification,
+            research_depth_level: researchDepthLevel,
+            min_documents: minDocuments,
+            max_documents: maxDocuments,
+            min_sites: minSites,
+            max_sites: maxSites,
           },
           tags: ["model:" + llmDisplayName],
           metadata: {
             conversation_id: conversationId,
             llm: llmDisplayName,
             advanced_verification: advancedVerification,
+            research_depth_level: researchDepthLevel,
           },
         },
         {
@@ -292,6 +353,122 @@ export function ChatWindow(props: { conversationId: string }) {
               </label>
             </div>
           </div>
+          
+          <div className="flex items-center mb-2 ml-4">
+            <div className="shrink-0 flex items-center">
+              <input
+                id="deep-research-toggle"
+                type="checkbox"
+                checked={showDeepResearchConfig}
+                onChange={(e) => {
+                  setShowDeepResearchConfig(e.target.checked);
+                }}
+                className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                htmlFor="deep-research-toggle"
+                className="flex items-center cursor-pointer text-sm font-medium text-white"
+              >
+                Deep Research
+                <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-gradient-to-r from-purple-700 to-pink-800 rounded-full">NEW</span>
+              </label>
+            </div>
+          </div>
+          
+          {showDeepResearchConfig && (
+            <div className="w-full border border-gray-700 rounded-md p-4 mt-2 mb-4 bg-gray-800">
+              <Text fontWeight="medium" mb={2} color="white">
+                Deep Research Configuration
+              </Text>
+              
+              <FormControl mb={4}>
+                <FormLabel color="white" fontSize="sm">Research Depth</FormLabel>
+                <RadioGroup 
+                  value={researchDepthLevel} 
+                  onChange={(value) => {
+                    insertUrlParam("research_depth", value);
+                    setResearchDepthLevel(value);
+                    updateDocumentAndSiteCounts(value);
+                  }}
+                >
+                  <Stack direction="column" spacing={2}>
+                    <Radio value="general_reference" colorScheme="blue">
+                      <Flex alignItems="center">
+                        <Text color="white" fontSize="sm">General Reference</Text>
+                        <Tooltip label="Basic research using 20-50 documents from 10-30 sites">
+                          <InfoIcon color="gray.300" ml={2} w={3} h={3} />
+                        </Tooltip>
+                      </Flex>
+                    </Radio>
+                    <Radio value="analysis_insight" colorScheme="blue">
+                      <Flex alignItems="center">
+                        <Text color="white" fontSize="sm">Analysis & Insight</Text>
+                        <Tooltip label="Deeper research using 50-150 documents from 30-75 sites">
+                          <InfoIcon color="gray.300" ml={2} w={3} h={3} />
+                        </Tooltip>
+                      </Flex>
+                    </Radio>
+                    <Radio value="academic_research" colorScheme="blue">
+                      <Flex alignItems="center">
+                        <Text color="white" fontSize="sm">Academic / Scientific Research</Text>
+                        <Tooltip label="Comprehensive research using 100-500 documents from 50-150 sites">
+                          <InfoIcon color="gray.300" ml={2} w={3} h={3} />
+                        </Tooltip>
+                      </Flex>
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+              
+              <FormControl mb={4}>
+                <FormLabel color="white" fontSize="sm">
+                  Document Count ({minDocuments}-{maxDocuments})
+                </FormLabel>
+                <Box px={2}>
+                  <Slider
+                    min={Math.max(10, minDocuments * 0.5)}
+                    max={maxDocuments * 1.2}
+                    step={5}
+                    value={maxDocuments}
+                    onChange={(val) => {
+                      setMaxDocuments(Math.round(val));
+                      // Don't update URL params for sliders to avoid cluttering
+                    }}
+                    colorScheme="blue"
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb boxSize={6} />
+                  </Slider>
+                </Box>
+              </FormControl>
+              
+              <FormControl>
+                <FormLabel color="white" fontSize="sm">
+                  Site Count ({minSites}-{maxSites})
+                </FormLabel>
+                <Box px={2}>
+                  <Slider
+                    min={Math.max(5, minSites * 0.5)}
+                    max={maxSites * 1.2}
+                    step={5}
+                    value={maxSites}
+                    onChange={(val) => {
+                      setMaxSites(Math.round(val));
+                      // Don't update URL params for sliders to avoid cluttering
+                    }}
+                    colorScheme="blue"
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb boxSize={6} />
+                  </Slider>
+                </Box>
+              </FormControl>
+            </div>
+          )}
         </div>
       </Flex>
       <div
