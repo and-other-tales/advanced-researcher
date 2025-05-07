@@ -82,14 +82,26 @@ def load_env_file(env_path: Optional[str] = None) -> None:
                         os.environ[key.strip()] = value.strip()
 ''')
 
-# Create .env file from template if it doesn't exist
+# Create .env file from template if it doesn't exist, but don't use it if we have environment variables set
 env_file = os.path.join(project_root, ".env")
-if not os.path.exists(env_file):
-    env_example = os.path.join(project_root, ".env.example")
+env_example = os.path.join(project_root, ".env.example")
+
+# Check if we already have essential environment variables set
+has_env_vars = any([
+    os.environ.get("OPENAI_API_KEY"),
+    os.environ.get("ANTHROPIC_API_KEY"),
+    os.environ.get("GOOGLE_API_KEY"),
+    os.environ.get("FIREWORKS_API_KEY"),
+    os.environ.get("USE_OLLAMA") in ("true", "1", "t", "yes", "y")
+])
+
+if not os.path.exists(env_file) and not has_env_vars:
     if os.path.exists(env_example):
-        logger.info(f"Creating .env file from .env.example")
+        logger.info(f"No environment variables found. Creating .env file from .env.example")
         from shutil import copyfile
         copyfile(env_example, env_file)
+    else:
+        logger.warning("No environment variables found and no .env.example file exists")
 
 # Import environment utilities and load .env
 try:

@@ -8,9 +8,9 @@ import uuid
 from typing import Dict, List, Optional, Tuple, Union
 
 from bs4 import BeautifulSoup
-from langchain_core.indexing import SQLRecordManager, index
-from langchain_community.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
+from langchain.indexes import SQLRecordManager, index
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader, WebBaseLoader
 from langchain_core.documents import Document
 from langchain_core.language_models import LanguageModelLike
@@ -541,11 +541,21 @@ from pathlib import Path
 
 # Define persistent storage location
 from backend.utils import get_env
-DATA_MOUNT_PATH = get_env("DATA_MOUNT_PATH", "/data")
-LEARNING_DIR = Path(DATA_MOUNT_PATH) / "auto_learning"
+import os
 
-# Create directory if it doesn't exist
-LEARNING_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    DATA_MOUNT_PATH = get_env("DATA_MOUNT_PATH", "/tmp/data")
+    LEARNING_DIR = Path(DATA_MOUNT_PATH) / "auto_learning"
+    
+    # Create directory if it doesn't exist
+    os.makedirs(LEARNING_DIR, exist_ok=True)
+    print(f"Created learning directory at {LEARNING_DIR}")
+except Exception as e:
+    print(f"Error creating learning directory: {e}")
+    # Use a fallback directory in /tmp if all else fails
+    LEARNING_DIR = Path("/tmp") / "auto_learning"
+    os.makedirs(LEARNING_DIR, exist_ok=True)
+    print(f"Using fallback learning directory: {LEARNING_DIR}")
 
 # In-memory cache backed by persistent storage
 # Initialize with empty dict to avoid reference before assignment

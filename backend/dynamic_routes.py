@@ -46,14 +46,23 @@ from pathlib import Path
 
 # Define the path to the knowledge base metadata file
 # Use the DATA_MOUNT_PATH environment variable if available
-DATA_MOUNT_PATH = os.environ.get("DATA_MOUNT_PATH", "/data")
-KB_METADATA_FILE = Path(DATA_MOUNT_PATH) / "knowledge_bases.json"
-
-# Initialize the global variable
-KNOWLEDGE_BASES = []
-
-# Create the directory if it doesn't exist
-Path(DATA_MOUNT_PATH).mkdir(parents=True, exist_ok=True)
+try:
+    DATA_MOUNT_PATH = os.environ.get("DATA_MOUNT_PATH", "/tmp/data")
+    KB_METADATA_FILE = Path(DATA_MOUNT_PATH) / "knowledge_bases.json"
+    
+    # Initialize the global variable
+    KNOWLEDGE_BASES = []
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(DATA_MOUNT_PATH, exist_ok=True)
+    print(f"Using knowledge base directory: {DATA_MOUNT_PATH}")
+except Exception as e:
+    print(f"Error setting up knowledge base directory: {e}")
+    # Use a fallback directory in /tmp
+    DATA_MOUNT_PATH = "/tmp"
+    KB_METADATA_FILE = Path(DATA_MOUNT_PATH) / "knowledge_bases.json"
+    KNOWLEDGE_BASES = []
+    print(f"Using fallback knowledge base directory: {DATA_MOUNT_PATH}")
 
 def save_knowledge_bases():
     """Save knowledge bases to persistent storage."""

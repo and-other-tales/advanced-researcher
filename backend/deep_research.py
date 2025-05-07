@@ -1,8 +1,10 @@
 """Integration with open_deep_research for comprehensive research-based responses."""
 import logging
 import os
+import asyncio
 import datetime
 from typing import Dict, List, Optional, Union, Any
+from pathlib import Path
 
 from langchain_core.documents import Document
 from langchain_core.language_models import LanguageModelLike
@@ -94,11 +96,20 @@ class DeepResearchEngine:
         from pathlib import Path
         
         # Use the data mount path for persistent storage
-        self.data_mount_path = os.environ.get("DATA_MOUNT_PATH", "/data")
-        self.research_dir = Path(self.data_mount_path) / "deep_research"
-        
-        # Create directory if it doesn't exist
-        self.research_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.data_mount_path = os.environ.get("DATA_MOUNT_PATH", "/tmp/data")
+            self.research_dir = Path(self.data_mount_path) / "deep_research"
+            
+            # Create directory if it doesn't exist
+            os.makedirs(self.research_dir, exist_ok=True)
+            print(f"Created research directory at {self.research_dir}")
+        except Exception as e:
+            print(f"Error creating research directory: {e}")
+            # Use a fallback directory in /tmp
+            self.data_mount_path = "/tmp"
+            self.research_dir = Path(self.data_mount_path) / "deep_research"
+            os.makedirs(self.research_dir, exist_ok=True)
+            print(f"Using fallback research directory: {self.research_dir}")
         
         # Initialize the in-memory cache, which will be backed by files
         self.research_store = {}

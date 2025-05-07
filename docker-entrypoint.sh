@@ -1,10 +1,20 @@
 #!/bin/bash
 set -e
 
-# Create .env file if it doesn't exist
-if [ ! -f .env ]; then
-    echo "Creating .env file from .env.example"
-    cp .env.example .env
+# Check if we already have essential environment variables set
+HAS_ENV_VARS=false
+if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ] || [ -n "$FIREWORKS_API_KEY" ] || [ "$USE_OLLAMA" = "true" ]; then
+    HAS_ENV_VARS=true
+fi
+
+# Create .env file if it doesn't exist and we don't have environment variables set
+if [ ! -f .env ] && [ "$HAS_ENV_VARS" = "false" ]; then
+    echo "No environment variables found. Creating .env file from .env.example"
+    if [ -f .env.example ]; then
+        cp .env.example .env
+    else
+        echo "Warning: No environment variables found and no .env.example file exists"
+    fi
 fi
 
 # Ensure backend/utils/__init__.py exists

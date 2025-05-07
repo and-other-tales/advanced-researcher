@@ -1,12 +1,24 @@
 #!/bin/bash
 set -e
 
-# Check if .env file exists
-if [ ! -f .env ]; then
-    echo "Warning: .env file not found"
-    echo "Creating .env file from .env.example"
-    cp .env.example .env
-    echo "Please edit .env file to add your API keys and configuration"
+# Check if we already have essential environment variables set
+HAS_ENV_VARS=false
+if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ] || [ -n "$FIREWORKS_API_KEY" ] || [ "$USE_OLLAMA" = "true" ]; then
+    HAS_ENV_VARS=true
+fi
+
+# Create .env file if it doesn't exist and we don't have environment variables set
+if [ ! -f .env ] && [ "$HAS_ENV_VARS" = "false" ]; then
+    echo "Warning: No environment variables found and .env file not found"
+    if [ -f .env.example ]; then
+        echo "Creating .env file from .env.example"
+        cp .env.example .env
+        echo "Please edit .env file to add your API keys and configuration"
+    else
+        echo "Warning: No .env.example file exists"
+    fi
+elif [ "$HAS_ENV_VARS" = "true" ]; then
+    echo "Using environment variables from system environment"
 fi
 
 # Run verification script to check for required credentials

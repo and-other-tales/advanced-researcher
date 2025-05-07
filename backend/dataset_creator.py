@@ -17,21 +17,23 @@ import requests
 from bs4 import BeautifulSoup
 from datasets import Dataset, Features, Value
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
-from langchain_community.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Base directory for storing datasets
-DATA_DIR = os.environ.get("DATA_MOUNT_PATH", "/data")
+DATA_DIR = os.environ.get("DATA_MOUNT_PATH", "/tmp/data")
 if not os.path.exists(DATA_DIR):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
+        print(f"Created dataset directory at {DATA_DIR}")
     except Exception as e:
-        logger.warning(f"Could not create DATA_DIR at {DATA_DIR}: {e}")
-        # Fall back to a temporary directory
-        DATA_DIR = tempfile.mkdtemp(prefix="datasets_")
+        print(f"Error creating dataset directory: {e}")
+        # Use a fallback directory in /tmp
+        DATA_DIR = "/tmp"
+        print(f"Using fallback dataset directory: {DATA_DIR}")
         logger.info(f"Using temporary directory for datasets: {DATA_DIR}")
 
 

@@ -4,7 +4,7 @@ import os
 
 import weaviate
 from langchain_openai import OpenAIEmbeddings
-from langchain_core.indexing import SQLRecordManager, index
+from langchain.indexes import SQLRecordManager, index
 from langchain_community.vectorstores import Weaviate
 
 logger = logging.getLogger(__name__)

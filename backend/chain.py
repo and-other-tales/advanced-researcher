@@ -20,7 +20,7 @@ from langchain_core.prompts import (
     MessagesPlaceholder,
     PromptTemplate,
 )
-from langchain_core.pydantic_v1 import BaseModel
+from pydantic import BaseModel
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import (
     ConfigurableField,
