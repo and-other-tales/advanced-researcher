@@ -28,12 +28,15 @@ RUN mkdir -p /data && chmod 777 /data
 # Copy application code
 COPY backend ./backend
 COPY frontend/app/utils/constants.tsx ./frontend/app/utils/constants.tsx
+COPY main.py .env.example ./
 
 # Default environment variables
 ENV DATA_MOUNT_PATH=/data
+ENV HOST=0.0.0.0
+ENV PORT=8080
 
 # Expose port
 EXPOSE 8080
 
 # Command to run the application
-CMD ["python", "-m", "backend.local_main"]
+CMD ["python", "-m", "main"]

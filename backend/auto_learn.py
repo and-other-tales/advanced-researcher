@@ -8,9 +8,9 @@ import uuid
 from typing import Dict, List, Optional, Tuple, Union
 
 from bs4 import BeautifulSoup
-from langchain.indexes import SQLRecordManager, index
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
+from langchain_community.indexes import SQLRecordManager, index
+from langchain_community.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader, WebBaseLoader
 from langchain_core.documents import Document
 from langchain_core.language_models import LanguageModelLike
@@ -18,18 +18,49 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel
 
-# Import backend modules
-from backend.local_embeddings import get_embeddings_model
+# Import backend modules with error handling
+try:
+    from backend.local_embeddings import get_embeddings_model
+except ImportError as e:
+    logger.warning(f"Error importing local_embeddings: {e}")
+    # Define fallback function
+    def get_embeddings_model():
+        from langchain_openai import OpenAIEmbeddings
+        try:
+            return OpenAIEmbeddings(model="text-embedding-3-small")
+        except Exception:
+            # Return a dummy embeddings model if OpenAI is not available
+            from langchain_core.embeddings import Embeddings
+            class DummyEmbeddings(Embeddings):
+                def embed_documents(self, texts):
+                    return [[0.0] * 768 for _ in texts]
+                def embed_query(self, text):
+                    return [0.0] * 768
+            return DummyEmbeddings()
 
 # Attempt to import Weaviate or Chroma based on environment
 try:
     import weaviate
-    from constants import WEAVIATE_DOCS_INDEX_NAME
+    try:
+        from constants import WEAVIATE_DOCS_INDEX_NAME
+    except ImportError:
+        # Define a fallback if not available
+        WEAVIATE_DOCS_INDEX_NAME = "LangChainDocs"
     from langchain_community.vectorstores import Weaviate
     USING_WEAVIATE = True
 except ImportError:
-    from langchain_community.vectorstores import Chroma
-    USING_WEAVIATE = False
+    try:
+        from langchain_community.vectorstores import Chroma
+        USING_WEAVIATE = False
+    except ImportError:
+        logger.error("Neither Weaviate nor Chroma could be imported, vector storage functionality will be limited")
+        USING_WEAVIATE = False
+        # Define a dummy Chroma class
+        class Chroma:
+            def __init__(self, *args, **kwargs):
+                pass
+            def as_retriever(self, *args, **kwargs):
+                return None
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -505,6 +536,7 @@ LEARNING_DIR = Path(DATA_MOUNT_PATH) / "auto_learning"
 LEARNING_DIR.mkdir(parents=True, exist_ok=True)
 
 # In-memory cache backed by persistent storage
+# Initialize with empty dict to avoid reference before assignment
 learning_registry = {}
 
 def _get_learning_file_path(task_id: str) -> Path:
@@ -536,8 +568,13 @@ def _save_learning_task(task_id: str) -> None:
     except Exception as e:
         logger.error(f"Error saving learning task data for {task_id}: {e}")
 
-def _load_learning_tasks() -> None:
-    """Load all learning task data from disk."""
+def _load_learning_tasks() -> dict:
+    """Load all learning task data from disk.
+    
+    Returns:
+        Dict containing loaded task data
+    """
+    loaded_registry = {}
     try:
         # Find all JSON files in the learning directory
         json_files = list(LEARNING_DIR.glob("*.json"))
@@ -551,20 +588,21 @@ def _load_learning_tasks() -> None:
                 with open(file_path, 'r') as f:
                     task_data = json.load(f)
                 
-                # Add to in-memory registry
-                learning_registry[task_id] = task_data
+                # Add to registry
+                loaded_registry[task_id] = task_data
                 
             except Exception as e:
                 logger.error(f"Error loading learning task data from {file_path}: {e}")
         
-        logger.info(f"Loaded {len(learning_registry)} learning tasks from disk")
+        logger.info(f"Loaded {len(loaded_registry)} learning tasks from disk")
+        return loaded_registry
     except Exception as e:
         logger.error(f"Error loading learning task data: {e}")
-        # Start with an empty registry on error
-        learning_registry = {}
+        # Return empty registry on error
+        return {}
 
-# Load existing learning tasks
-_load_learning_tasks()
+# Initialize the learning registry and load existing tasks
+learning_registry = _load_learning_tasks()
 
 
 async def register_learning_task(query: str, llm: LanguageModelLike) -> str:

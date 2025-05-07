@@ -1,0 +1,166 @@
+2025-05-07 20:15:52.201 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:52.201 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:15:52.201 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:52.201 BST
+warnings.warn(
+2025-05-07 20:15:52.209 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:52.209 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:15:52.209 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:52.209 BST
+warnings.warn(
+2025-05-07 20:15:53.795 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:15:53.796 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:15:53.969 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:53.969 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:15:53.969 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:53.969 BST
+warnings.warn(
+2025-05-07 20:15:53.995 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:53.995 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:15:53.995 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:53.995 BST
+warnings.warn(
+2025-05-07 20:15:54.116 BST
+Container called exit(1).
+2025-05-07 20:15:54.815 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:15:54.817 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:15:55.126 BST
+Container called exit(1).
+2025-05-07 20:15:55.466 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:15:55.987 BST
+GCSFuse is mounted with bucket othertales-researcher. Enable GCSFuse logging with mount options for more logs
+2025-05-07 20:15:56.254 BST
+GCSFuse is mounted with bucket othertales-researcher. Enable GCSFuse logging with mount options for more logs
+2025-05-07 20:15:56.583 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:15:56.882 BST
+GCSFuse is mounted with bucket othertales-researcher. Enable GCSFuse logging with mount options for more logs
+2025-05-07 20:15:57.252 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:15:57.255 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:15:57.674 BST
+Container called exit(1).
+2025-05-07 20:15:59.051 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:59.051 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:15:59.051 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:59.051 BST
+warnings.warn(
+2025-05-07 20:15:59.059 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:15:59.059 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:15:59.059 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:15:59.059 BST
+warnings.warn(
+2025-05-07 20:15:59.110 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:15:59.117 BST
+Cloud RunReplaceServiceadvanced-researcher-00001-dfl {@type: type.googleapis.com/google.cloud.audit.AuditLog, methodName: /Services.ReplaceService, resourceName: namespaces/other-tales/revisions/advanced-researcher-00001-dfl, response: {…}, serviceName: run.googleapis.com, status: {…}}
+2025-05-07 20:16:00.257 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:00.257 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:16:00.257 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:00.257 BST
+warnings.warn(
+2025-05-07 20:16:00.266 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:00.266 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:16:00.266 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:00.266 BST
+warnings.warn(
+2025-05-07 20:16:00.577 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:16:00.578 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:16:00.807 BST
+Container called exit(1).
+2025-05-07 20:16:01.823 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:01.823 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:16:01.823 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:01.823 BST
+warnings.warn(
+2025-05-07 20:16:01.841 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:01.841 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:16:01.841 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:01.841 BST
+warnings.warn(
+2025-05-07 20:16:02.011 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:16:02.012 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:16:02.135 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:16:02.282 BST
+Container called exit(1).
+2025-05-07 20:16:03.771 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:16:03.900 BST
+GCSFuse is mounted with bucket othertales-researcher. Enable GCSFuse logging with mount options for more logs
+2025-05-07 20:16:04.692 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:16:04.695 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:16:05.011 BST
+Container called exit(1).
+2025-05-07 20:16:06.502 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.
+2025-05-07 20:16:06.512 BST
+Cloud RunReplaceServiceadvanced-researcher-00002-5sl {@type: type.googleapis.com/google.cloud.audit.AuditLog, methodName: /Services.ReplaceService, resourceName: namespaces/other-tales/revisions/advanced-researcher-00002-5sl, response: {…}, serviceName: run.googleapis.com, status: {…}}
+2025-05-07 20:16:06.580 BST
+Cloud RunReplaceServiceadvanced-researcher {@type: type.googleapis.com/google.cloud.audit.AuditLog, methodName: /Services.ReplaceService, resourceName: namespaces/other-tales/services/advanced-researcher, response: {…}, serviceName: run.googleapis.com, status: {…}}
+2025-05-07 20:16:07.130 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:07.130 BST
+`from langchain_community.document_loaders import RecursiveUrlLoader`.
+2025-05-07 20:16:07.130 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:07.130 BST
+warnings.warn(
+2025-05-07 20:16:07.138 BST
+/usr/local/lib/python3.10/site-packages/langchain/document_loaders/__init__.py:36: LangChainDeprecationWarning: Importing document loaders from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+2025-05-07 20:16:07.138 BST
+`from langchain_community.document_loaders import SitemapLoader`.
+2025-05-07 20:16:07.138 BST
+To install langchain-community run `pip install -U langchain-community`.
+2025-05-07 20:16:07.138 BST
+warnings.warn(
+2025-05-07 20:16:08.849 BST
+ERROR:backend.auto_learn:Error loading learning task data: local variable 'learning_registry' referenced before assignment
+2025-05-07 20:16:08.850 BST
+Traceback (most recent call last): File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main return _run_code(code, main_globals, None, File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code exec(code, run_globals) File "/app/backend/local_main.py", line 7, in <module> from backend.local_chain import ChatRequest, answer_chain File "/app/backend/local_chain.py", line 80, in <module> client = Client() File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 478, in __init__ _validate_api_key_if_hosted(self.api_url, self.api_key) File "/usr/local/lib/python3.10/site-packages/langsmith/client.py", line 267, in _validate_api_key_if_hosted raise ls_utils.LangSmithUserError( langsmith.utils.LangSmithUserError: API key must be provided when using hosted LangSmith API
+2025-05-07 20:16:09.181 BST
+Container called exit(1).
+2025-05-07 20:16:10.686 BST
+Default STARTUP TCP probe failed 1 time consecutively for container "advanced-researcher-1" on port 8080. The instance was not started. Connection failed with status CANCELLED.

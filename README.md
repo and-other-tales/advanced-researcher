@@ -18,7 +18,14 @@ This project supports both local deployment and cloud-based deployment.
    ```bash
    cp .env.example .env
    ```
-   Fill in the required environment variables (at minimum, you need an OpenAI API key).
+   Edit the `.env` file to fill in your API keys and configuration. At minimum, you need one of the following:
+   - `OPENAI_API_KEY` for OpenAI models (GPT and embeddings)
+   - `ANTHROPIC_API_KEY` for Anthropic Claude models
+   - `GOOGLE_API_KEY` for Google Gemini models
+   - `FIREWORKS_API_KEY` for Fireworks models
+   - Or set `USE_OLLAMA=true` for local models via Ollama
+   
+   See [Environment Variables](#environment-variables) section for details on all available configuration options.
 
 3. Set up Docker containers for Chroma and PostgreSQL (see [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md) for details).
 
@@ -155,6 +162,72 @@ curl -X POST http://localhost:8080/api/datasets \
     "split_ratio": {"train": 0.8, "validation": 0.1, "test": 0.1}
   }'
 ```
+
+## Environment Variables
+
+The application uses a comprehensive set of environment variables to configure its behavior. You can set these in a `.env` file or directly in your environment.
+
+### LLM API Keys
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `OPENAI_API_KEY` | OpenAI API key for GPT models and embeddings | No* | None |
+| `ANTHROPIC_API_KEY` | Anthropic API key for Claude models | No* | None |
+| `GOOGLE_API_KEY` | Google API key for Gemini models | No* | None |
+| `FIREWORKS_API_KEY` | Fireworks API key for models | No* | None |
+| `COHERE_API_KEY` | Cohere API key for embeddings | No | None |
+| `LANGSMITH_API_KEY` | LangSmith API key for tracing | No | None |
+| `LANGSMITH_TRACING` | Enable LangSmith tracing | No | "false" |
+| `LANGSMITH_ENDPOINT` | LangSmith API endpoint | No | "https://api.smith.langchain.com" |
+| `LANGSMITH_PROJECT` | LangSmith project name for traces | No | None |
+
+*At least one of these is required for full functionality, or you must use Ollama locally.
+
+### Search API Keys (for Deep Research and Auto-Learning)
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `TAVILY_API_KEY` | Tavily search API key | No | None |
+| `PERPLEXITY_API_KEY` | Perplexity API key | No | None |
+
+### Vector Database Configuration
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `WEAVIATE_URL` | URL for Weaviate vector database | No | None |
+| `WEAVIATE_API_KEY` | Authentication key for Weaviate | No | None |
+| `WEAVIATE_DOCS_INDEX_NAME` | Name of the Weaviate index | No | "LangChain_Combined_Docs_OpenAI_text_embedding_3_small" |
+| `COLLECTION_NAME` | Name of the Chroma collection | No | "langchain" |
+
+### PostgreSQL Database Configuration
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `RECORD_MANAGER_DB_URL` | Complete PostgreSQL connection string | No | Constructed from individual settings |
+| `DATABASE_HOST` | PostgreSQL host | No | "127.0.0.1" |
+| `DATABASE_PORT` | PostgreSQL port | No | "5432" |
+| `DATABASE_USERNAME` | PostgreSQL username | No | "postgres" |
+| `DATABASE_PASSWORD` | PostgreSQL password | No | "mysecretpassword" |
+| `DATABASE_NAME` | PostgreSQL database name | No | "langchain" |
+
+### Local Model Configuration
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `USE_OLLAMA` | Use Ollama for local models | No | "false" |
+| `OLLAMA_BASE_URL` | URL for Ollama service | No | "http://localhost:11434" |
+
+### Deployment Configuration
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `DATA_MOUNT_PATH` | Path for persistent data storage | No | "/data" |
+| `FORCE_UPDATE` | Force update during document ingestion | No | "false" |
+| `HOST` | Host to bind the server to | No | "127.0.0.1" |
+| `PORT` | Port to bind the server to | No | 8000 |
+| `RELOAD` | Enable auto-reload for development | No | "false" |
+| `LOG_LEVEL` | Logging level (info, debug, warning, error) | No | "info" |
+| `USE_LOCAL` | Use local application with minimal dependencies | No | "false" |
 
 ## License
 

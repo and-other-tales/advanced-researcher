@@ -16,8 +16,8 @@ import datasets
 import requests
 from bs4 import BeautifulSoup
 from datasets import Dataset, Features, Value
-from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
+from langchain_community.text_splitter import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)

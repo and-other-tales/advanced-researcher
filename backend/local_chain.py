@@ -28,11 +28,33 @@ from langchain_community.chat_models import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
 from langsmith import Client
+import os
 
-from backend.local_embeddings import get_embeddings_model
-from backend.dynamic_chain import ChatRequestWithKB, create_dynamic_chain
-from backend.auto_learn import detect_insufficient_information, register_learning_task
-from backend.verification import get_verification_components, VerificationComponents
+# Import backend modules with error handling
+try:
+    from backend.local_embeddings import get_embeddings_model
+    from backend.dynamic_chain import ChatRequestWithKB, create_dynamic_chain
+    from backend.auto_learn import detect_insufficient_information, register_learning_task
+    from backend.verification import get_verification_components, VerificationComponents
+except ImportError as e:
+    import logging
+    logging.error(f"Error importing backend modules: {e}")
+    # Define fallback functions/classes if imports fail
+    def get_embeddings_model():
+        return None
+    def create_dynamic_chain(*args, **kwargs):
+        return lambda x: "Error: Backend modules not available"
+    def detect_insufficient_information(*args, **kwargs):
+        return False
+    async def register_learning_task(*args, **kwargs):
+        pass
+    def get_verification_components(*args, **kwargs):
+        class DummyVerification:
+            def filter_relevant_documents(self, *args, **kwargs):
+                return []
+            def verify_and_improve_answer(self, *args, **kwargs):
+                return {"verified_answer": "Error: Verification not available"}
+        return DummyVerification()
 
 RESPONSE_TEMPLATE = """\
 You are an expert programmer and problem-solver, tasked with answering any question \
@@ -77,7 +99,33 @@ Follow Up Input: {question}
 Standalone Question:"""
 
 
-client = Client()
+# Import utility for environment variables
+from backend.utils import get_env
+
+# Initialize LangSmith client with API key, or use no-op client if no key is present
+try:
+    langsmith_api_key = get_env("LANGSMITH_API_KEY")
+    langsmith_endpoint = get_env("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
+    langsmith_tracing = get_env("LANGSMITH_TRACING", "").lower() in ("true", "1", "t", "yes", "y")
+    
+    if langsmith_api_key and langsmith_tracing:
+        client = Client(
+            api_key=langsmith_api_key,
+            api_url=langsmith_endpoint,
+        )
+        logging.info(f"LangSmith tracing enabled with endpoint {langsmith_endpoint}")
+    else:
+        # Create a no-op client that doesn't require API key
+        client = Client(api_key="no-op-key", api_url="http://localhost:8000")
+        logging.info("LangSmith tracing disabled - using no-op client")
+except Exception as e:
+    import logging
+    logging.warning(f"Failed to initialize LangSmith client: {e}")
+    # Create a dummy client that doesn't make actual API calls
+    class DummyClient:
+        def __getattr__(self, name):
+            return lambda *args, **kwargs: None
+    client = DummyClient()
 
 
 class ChatRequest(BaseModel):
@@ -277,13 +325,43 @@ def create_chain(llm: LanguageModelLike, retriever: BaseRetriever) -> Runnable:
 
 def get_llm() -> LanguageModelLike:
     """Get the language model to use."""
+    from backend.utils import get_bool_env, get_env
+    
     # Use Ollama for local LLM if specified
-    if os.environ.get("USE_OLLAMA") == "true":
-        base_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+    if get_bool_env("USE_OLLAMA", False):
+        base_url = get_env("OLLAMA_BASE_URL", "http://localhost:11434")
         return ChatOllama(
             model="mistral",
             base_url=base_url,
             temperature=0,
+        )
+    
+    # Get API key providers
+    anthropic_api_key = get_env("ANTHROPIC_API_KEY")
+    if anthropic_api_key:
+        from langchain_anthropic import ChatAnthropic
+        return ChatAnthropic(
+            model="claude-3-sonnet-20240229",
+            temperature=0,
+            anthropic_api_key=anthropic_api_key,
+        )
+        
+    google_api_key = get_env("GOOGLE_API_KEY")
+    if google_api_key:
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        return ChatGoogleGenerativeAI(
+            model="gemini-1.5-pro",
+            temperature=0,
+            google_api_key=google_api_key,
+        )
+    
+    fireworks_api_key = get_env("FIREWORKS_API_KEY")
+    if fireworks_api_key:
+        from langchain_fireworks import ChatFireworks
+        return ChatFireworks(
+            model="accounts/fireworks/models/firefunction-v2",
+            temperature=0,
+            fireworks_api_key=fireworks_api_key,
         )
     
     # Default to OpenAI
