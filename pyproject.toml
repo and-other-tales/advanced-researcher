@@ -6,7 +6,7 @@ authors = ["David James <david@othertales.co>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 beautifulsoup4 = "4.13.4"
 datasets = "3.6.0"
 duckduckgo_search = "8.0.1"
