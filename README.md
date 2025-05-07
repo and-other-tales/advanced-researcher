@@ -20,7 +20,7 @@ This project supports both local deployment and cloud-based deployment.
    ```
    Fill in the required environment variables (at minimum, you need an OpenAI API key).
 
-3. Set up Docker containers for Chroma and PostgreSQL (see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md) for details).
+3. Set up Docker containers for Chroma and PostgreSQL (see [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md) for details).
 
 4. Run the ingestion script to populate the vector store:
    ```bash
@@ -41,11 +41,11 @@ This project supports both local deployment and cloud-based deployment.
 
 7. Open http://localhost:3000 in your browser.
 
-For more detailed instructions, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
+For more detailed instructions, see [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md).
 
 ### For Cloud Deployment:
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions on deploying to Vercel + GCP Cloud Run.
+See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions on deploying to Vercel + GCP Cloud Run.
 
 ## Features
 
@@ -86,15 +86,15 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions on deploying to Ver
 
 ## Documentation
 
-- [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md): Detailed instructions for local deployment
-- [DEPLOYMENT.md](DEPLOYMENT.md): Detailed instructions for cloud deployment
-- [CONCEPTS.md](CONCEPTS.md): Core concepts used in this project
-- [MODIFY.md](MODIFY.md): Guide for modifying and extending this system
-- [LANGSMITH.md](LANGSMITH.md): How to use LangSmith for tracing and debugging
-- [DYNAMIC_INGEST.md](DYNAMIC_INGEST.md): How to use dynamic document ingestion to create custom knowledge bases
-- [DATASET_CREATION.md](DATASET_CREATION.md): How to create Hugging Face datasets from web sources
-- [DEEP_RESEARCH.md](DEEP_RESEARCH.md): How to use deep research for comprehensive reports
-- [AUTO_LEARNING.md](AUTO_LEARNING.md): How the system automatically learns from web sources
+- [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md): Detailed instructions for local deployment
+- [DEPLOYMENT.md](docs/DEPLOYMENT.md): Detailed instructions for cloud deployment
+- [CONCEPTS.md](docs/CONCEPTS.md): Core concepts used in this project
+- [MODIFY.md](docs/MODIFY.md): Guide for modifying and extending this system
+- [LANGSMITH.md](docs/LANGSMITH.md): How to use LangSmith for tracing and debugging
+- [DYNAMIC_INGEST.md](docs/DYNAMIC_INGEST.md): How to use dynamic document ingestion to create custom knowledge bases
+- [DATASET_CREATION.md](docs/DATASET_CREATION.md): How to create Hugging Face datasets from web sources
+- [DEEP_RESEARCH.md](docs/DEEP_RESEARCH.md): How to use deep research for comprehensive reports
+- [AUTO_LEARNING.md](docs/AUTO_LEARNING.md): How the system automatically learns from web sources
 
 ## Project Structure
 

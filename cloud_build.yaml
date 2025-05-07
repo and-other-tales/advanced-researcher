@@ -1,11 +1,11 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/advanced-researcher:$COMMIT_SHA', '.']
   
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA']
+    args: ['push', 'gcr.io/$PROJECT_ID/advanced-researcher:$COMMIT_SHA']
   
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -13,11 +13,11 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'chat-langchain'
+      - 'advanced-researcher'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/advanced-researcher:$COMMIT_SHA'
       - '--region'
-      - 'us-central1'
+      - 'europe-west4'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
@@ -43,11 +43,11 @@ steps:
       - 'run'
       - 'jobs'
       - 'update'
-      - 'chat-langchain-ingest'
+      - 'advanced-researcher-ingest'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/advanced-researcher:$COMMIT_SHA'
       - '--region'
-      - 'us-central1'
+      - 'europe-west4'
       - '--command'
       - 'python'
       - '--args'
@@ -67,7 +67,7 @@ steps:
     id: 'update-job'
 
 images:
-  - 'gcr.io/$PROJECT_ID/chat-langchain:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/advanced-researcher:$COMMIT_SHA'
 
 substitutions:
   _CLOUDSQL_CONNECTION_NAME: '' # Set this in your Cloud Build trigger

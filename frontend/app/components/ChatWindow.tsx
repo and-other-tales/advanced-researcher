@@ -226,7 +226,7 @@ export function ChatWindow(props: { conversationId: string }) {
           mb={1}
           color={"white"}
         >
-          Chat LangChain 🦜🔗
+          Advanced Researcher 🦜🔗
         </Heading>
         {messages.length > 0 ? (
           <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
@@ -351,7 +351,7 @@ export function ChatWindow(props: { conversationId: string }) {
       {messages.length === 0 ? (
         <footer className="flex justify-center absolute bottom-8">
           <a
-            href="https://github.com/langchain-ai/chat-langchain"
+            href="https://github.com/and-other-tales/advanced-researcher"
             target="_blank"
             className="text-white flex items-center"
           >

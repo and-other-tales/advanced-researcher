@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "chat-langchain"
+name = "advanced-researcher"
 version = "0.1.1"
 description = ""
-authors = ["SN <6432132+samnoyes@users.noreply.github.com>"]
+authors = ["David James <david@othertales.co>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

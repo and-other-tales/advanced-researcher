@@ -1,4 +1,4 @@
-variable "chat_langchain_backend_name" {
+variable "advanced_researcher_backend_name" {
   description = "Name to use for resources that will be created"
   type        = string
 }
