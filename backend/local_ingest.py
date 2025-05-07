@@ -6,7 +6,7 @@ from parser import langchain_docs_extractor
 
 from bs4 import BeautifulSoup, SoupStrainer
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
-from langchain_community.indexes import SQLRecordManager, index
+from langchain_core.indexing import SQLRecordManager, index
 from langchain_community.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_community.vectorstores import Chroma
@@ -90,16 +90,22 @@ def load_api_docs():
 
 
 def ingest_docs():
+    # Import utility for consistent environment variable handling
+    from backend.utils import get_env
+    
     # Use environment variables for configuration
-    if os.environ.get("WEAVIATE_URL") and os.environ.get("WEAVIATE_API_KEY"):
+    WEAVIATE_URL = get_env("WEAVIATE_URL")
+    WEAVIATE_API_KEY = get_env("WEAVIATE_API_KEY")
+    
+    if WEAVIATE_URL and WEAVIATE_API_KEY:
         # Cloud deployment with Weaviate
         import weaviate
         from constants import WEAVIATE_DOCS_INDEX_NAME
         from langchain_community.vectorstores import Weaviate
         
-        WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-        WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-        RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
+        RECORD_MANAGER_DB_URL = get_env("RECORD_MANAGER_DB_URL")
+        if not RECORD_MANAGER_DB_URL:
+            raise ValueError("RECORD_MANAGER_DB_URL must be set for Weaviate deployment")
         
         client = weaviate.Client(
             url=WEAVIATE_URL,
@@ -119,14 +125,14 @@ def ingest_docs():
         )
     else:
         # Local deployment with Chroma and PostgreSQL
-        DATABASE_HOST = os.environ.get("DATABASE_HOST", "127.0.0.1")
-        DATABASE_PORT = os.environ.get("DATABASE_PORT", "5432")
-        DATABASE_USERNAME = os.environ.get("DATABASE_USERNAME", "postgres")
-        DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "mysecretpassword")
-        DATABASE_NAME = os.environ.get("DATABASE_NAME", "langchain")
+        DATABASE_HOST = get_env("DATABASE_HOST", "127.0.0.1")
+        DATABASE_PORT = get_env("DATABASE_PORT", "5432")
+        DATABASE_USERNAME = get_env("DATABASE_USERNAME", "postgres")
+        DATABASE_PASSWORD = get_env("DATABASE_PASSWORD", "mysecretpassword")
+        DATABASE_NAME = get_env("DATABASE_NAME", "langchain")
         RECORD_MANAGER_DB_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
         
-        COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "langchain")
+        COLLECTION_NAME = get_env("COLLECTION_NAME", "langchain")
         
         vectorstore = Chroma(
             collection_name=COLLECTION_NAME,

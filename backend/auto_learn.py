@@ -8,7 +8,7 @@ import uuid
 from typing import Dict, List, Optional, Tuple, Union
 
 from bs4 import BeautifulSoup
-from langchain_community.indexes import SQLRecordManager, index
+from langchain_core.indexing import SQLRecordManager, index
 from langchain_community.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader, WebBaseLoader
@@ -185,6 +185,7 @@ async def search_web(search_queries: List[str]) -> List[SearchResult]:
         List of search results
     """
     from backend.deep_research import get_search_tool
+    from backend.utils import get_env
     
     all_results = []
     
@@ -195,11 +196,12 @@ async def search_web(search_queries: List[str]) -> List[SearchResult]:
         try:
             # Import and check for API key
             if api == "tavily":
-                if not os.environ.get("TAVILY_API_KEY"):
+                tavily_api_key = get_env("TAVILY_API_KEY")
+                if not tavily_api_key:
                     continue
                 
                 from tavily import TavilyClient
-                client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+                client = TavilyClient(api_key=tavily_api_key)
                 
                 for query in search_queries:
                     response = client.search(query=query, search_depth="basic")
@@ -232,12 +234,13 @@ async def search_web(search_queries: List[str]) -> List[SearchResult]:
                     return all_results
                     
             elif api == "perplexity":
-                if not os.environ.get("PERPLEXITY_API_KEY"):
+                perplexity_api_key = get_env("PERPLEXITY_API_KEY")
+                if not perplexity_api_key:
                     continue
                 
                 import httpx
                 headers = {
-                    "Authorization": f"Bearer {os.environ['PERPLEXITY_API_KEY']}",
+                    "Authorization": f"Bearer {perplexity_api_key}",
                     "Content-Type": "application/json"
                 }
                 
@@ -351,12 +354,18 @@ def simple_extractor(html: str) -> str:
 
 def get_vectorstore():
     """Get the appropriate vector store based on environment."""
+    # Import utility for consistent environment variable handling
+    from backend.utils import get_env
+    
     embedding_model = get_embeddings_model()
     
     if USING_WEAVIATE:
         # Use Weaviate for cloud deployment
-        WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-        WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
+        WEAVIATE_URL = get_env("WEAVIATE_URL")
+        WEAVIATE_API_KEY = get_env("WEAVIATE_API_KEY")
+        
+        if not WEAVIATE_URL or not WEAVIATE_API_KEY:
+            raise ValueError("WEAVIATE_URL and WEAVIATE_API_KEY must be set for Weaviate vectorstore")
         
         client = weaviate.Client(
             url=WEAVIATE_URL,
@@ -373,7 +382,7 @@ def get_vectorstore():
         )
     else:
         # Use Chroma for local deployment
-        collection_name = os.environ.get("COLLECTION_NAME", "langchain")
+        collection_name = get_env("COLLECTION_NAME", "langchain")
         
         return Chroma(
             collection_name=collection_name,
@@ -383,16 +392,18 @@ def get_vectorstore():
 
 def get_record_manager():
     """Get the appropriate record manager based on environment."""
+    # Import utility for consistent environment variable handling
+    from backend.utils import get_env
+    
     # Get record manager DB URL from environment or use default
-    if os.environ.get("RECORD_MANAGER_DB_URL"):
-        RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
-    else:
+    RECORD_MANAGER_DB_URL = get_env("RECORD_MANAGER_DB_URL")
+    if not RECORD_MANAGER_DB_URL:
         # Use a default PostgreSQL URL for local deployment
-        DATABASE_HOST = os.environ.get("DATABASE_HOST", "127.0.0.1")
-        DATABASE_PORT = os.environ.get("DATABASE_PORT", "5432")
-        DATABASE_USERNAME = os.environ.get("DATABASE_USERNAME", "postgres")
-        DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD", "mysecretpassword")
-        DATABASE_NAME = os.environ.get("DATABASE_NAME", "langchain")
+        DATABASE_HOST = get_env("DATABASE_HOST", "127.0.0.1")
+        DATABASE_PORT = get_env("DATABASE_PORT", "5432")
+        DATABASE_USERNAME = get_env("DATABASE_USERNAME", "postgres")
+        DATABASE_PASSWORD = get_env("DATABASE_PASSWORD", "mysecretpassword")
+        DATABASE_NAME = get_env("DATABASE_NAME", "langchain")
         RECORD_MANAGER_DB_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
     
     # Create record manager
@@ -401,7 +412,7 @@ def get_record_manager():
             f"weaviate/{WEAVIATE_DOCS_INDEX_NAME}", db_url=RECORD_MANAGER_DB_URL
         )
     else:
-        collection_name = os.environ.get("COLLECTION_NAME", "langchain")
+        collection_name = get_env("COLLECTION_NAME", "langchain")
         record_manager = SQLRecordManager(
             f"chroma/{collection_name}", db_url=RECORD_MANAGER_DB_URL
         )
@@ -529,7 +540,8 @@ import datetime
 from pathlib import Path
 
 # Define persistent storage location
-DATA_MOUNT_PATH = os.environ.get("DATA_MOUNT_PATH", "/data")
+from backend.utils import get_env
+DATA_MOUNT_PATH = get_env("DATA_MOUNT_PATH", "/data")
 LEARNING_DIR = Path(DATA_MOUNT_PATH) / "auto_learning"
 
 # Create directory if it doesn't exist

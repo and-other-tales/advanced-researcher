@@ -13,7 +13,7 @@ from langchain_core.prompts import (
     MessagesPlaceholder,
     PromptTemplate,
 )
-from langchain_core.pydantic_v1 import BaseModel
+from pydantic import BaseModel
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import (
     ConfigurableField,
@@ -24,7 +24,7 @@ from langchain_core.runnables import (
     RunnableSequence,
     chain,
 )
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Chroma
 from langsmith import Client
@@ -137,16 +137,22 @@ class ChatRequest(BaseModel):
 
 def get_retriever() -> BaseRetriever:
     """Get the retriever to use."""
+    # Import utility for consistent environment variable handling
+    from backend.utils import get_env
+    
     # Use local environment variables to decide on vector store
-    if os.environ.get("WEAVIATE_URL") and os.environ.get("WEAVIATE_API_KEY"):
+    WEAVIATE_URL = get_env("WEAVIATE_URL")
+    WEAVIATE_API_KEY = get_env("WEAVIATE_API_KEY")
+    
+    if WEAVIATE_URL and WEAVIATE_API_KEY:
         # Use Weaviate if configured
         import weaviate
         from langchain_community.vectorstores import Weaviate
         from backend.constants import WEAVIATE_DOCS_INDEX_NAME
         
         weaviate_client = weaviate.Client(
-            url=os.environ["WEAVIATE_URL"],
-            auth_client_secret=weaviate.AuthApiKey(api_key=os.environ["WEAVIATE_API_KEY"]),
+            url=WEAVIATE_URL,
+            auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
         )
         weaviate_client = Weaviate(
             client=weaviate_client,
@@ -159,7 +165,7 @@ def get_retriever() -> BaseRetriever:
         return weaviate_client.as_retriever(search_kwargs=dict(k=6))
     else:
         # Use Chroma for local development
-        collection_name = os.environ.get("COLLECTION_NAME", "langchain")
+        collection_name = get_env("COLLECTION_NAME", "langchain")
         chroma_client = Chroma(
             collection_name=collection_name,
             embedding_function=get_embeddings_model(),

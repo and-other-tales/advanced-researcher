@@ -31,6 +31,9 @@ COPY backend/ ./backend/
 COPY frontend/app/utils/constants.tsx ./frontend/app/utils/constants.tsx
 COPY main.py .env.example ./
 
+# Ensure .env file from host isn't used inside container
+RUN rm -f .env
+
 # Ensure backend/utils directory exists
 RUN mkdir -p backend/utils
 

@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 from langsmith import Client
+# Using Pydantic directly instead of from langchain_core
 from pydantic import BaseModel
 
 from backend.dynamic_routes import router as dynamic_routes

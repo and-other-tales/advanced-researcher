@@ -73,12 +73,10 @@ def get_env(key: str, default: Any = None) -> Any:
     if not _loaded:
         load_env_file()
     
-    # Check if already cached
-    if key in _env_vars:
-        return _env_vars[key]
-    
-    # Get from os environment
+    # Always get directly from OS environment first (highest priority)
     value = os.environ.get(key, default)
+    
+    # Update cache with current value
     _env_vars[key] = value
     
     return value
