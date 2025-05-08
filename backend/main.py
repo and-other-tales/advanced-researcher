@@ -148,21 +148,21 @@ if os.path.exists(static_path):
 # Check for the landing page
 landing_page = os.path.join(static_path, "index.html")
 
-# First check if we have a frontend build directory
-if os.path.exists(frontend_path) and os.path.exists(os.path.join(frontend_path, "index.html")):
-    app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
+# First check if we have static files in /static directory
+if os.path.exists(static_path):
+    # Mount the static directory
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
     
     @app.get("/")
-    async def serve_frontend_index():
-        """Serve the frontend index.html."""
-        index_path = os.path.join(frontend_path, "index.html")
-        return FileResponse(index_path)
-# If we have a landing page in the static directory, serve that
-elif os.path.exists(landing_page):
-    @app.get("/")
-    async def serve_landing_page():
-        """Serve the static landing page."""
-        return FileResponse(landing_page)
+    async def serve_index_page():
+        """Serve the index.html file from static directory."""
+        # Check if we have an index.html file in static directory
+        index_path = os.path.join(static_path, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        else:
+            # Serve our own welcome page
+            return FileResponse(landing_page)
 else:
     @app.get("/")
     async def root():

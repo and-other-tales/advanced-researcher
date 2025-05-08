@@ -55,18 +55,21 @@
     
     <div class="card">
         <h2>Welcome!</h2>
-        <p>The API server is running successfully, but the web interface is not available at this URL.</p>
+        <p>The API server is running successfully. You can access the web interface using one of the options below.</p>
     </div>
 
     <div class="card">
         <h2>Available Options</h2>
-        <p><strong>1. Run the frontend separately:</strong></p>
+        <p><strong>1. Open the web interface:</strong></p>
+        <a href="/frontend" class="button">Launch Web Interface</a>
+        
+        <p><strong>2. Run the frontend separately:</strong></p>
         <pre><code>cd frontend
 yarn install
 yarn dev</code></pre>
         <p>This will start the Next.js development server at <a href="http://localhost:8080">http://localhost:8080</a></p>
         
-        <p><strong>2. Use the API directly:</strong></p>
+        <p><strong>3. Use the API directly:</strong></p>
         <p>You can interact with the API endpoints directly.</p>
     </div>
 
