@@ -145,23 +145,27 @@ backend_dir = Path(__file__).resolve().parent
 static_path = os.path.join(backend_dir, "static")
 
 # Path to the frontend build directory
-frontend_path = os.path.join(project_root, "frontend", "public")
+frontend_out_path = os.path.join(project_root, "frontend", "out")
 
-# Mount static files directory if it exists
-if os.path.exists(static_path):
-    app.mount("/static", StaticFiles(directory=static_path), name="static")
-
-# Check for the landing page
-landing_page = os.path.join(static_path, "index.html")
-
-# Mount the static directory if it exists
-if os.path.exists(static_path):
+# First check if frontend/out exists (production build)
+if os.path.exists(frontend_out_path):
+    app.mount("/static", StaticFiles(directory=os.path.join(frontend_out_path, "static")), name="static")
+    
+# Then check if backend/static exists (copied static files)
+elif os.path.exists(static_path):
     app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 # Always serve the frontend directly at the root
 @app.get("/")
 async def serve_frontend():
     """Serve the frontend directly at the root path."""
+    # First try the frontend/out directory
+    if os.path.exists(frontend_out_path):
+        index_path = os.path.join(frontend_out_path, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+    
+    # Fall back to backend/static directory
     index_path = os.path.join(static_path, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
