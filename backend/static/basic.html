@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Researcher - Basic Page</h1>
+        
+        <div class="status success">
+            <p><strong>Success:</strong> This basic HTML page is loading correctly!</p>
+        </div>
+        
+        <div class="status info">
+            <p><strong>Info:</strong> This page is a minimal test to diagnose loading issues.</p>
+            <p>Current URL: <span id="page-url"></span></p>
+            <p>Page loaded at: <span id="time-loaded"></span></p>
+        </div>
+        
+        <div>
+            <h3>Debug Information</h3>
+            <div id="debug-output"></div>
+            <button onclick="testEndpoint('/health')">Test Health Endpoint</button>
+            <button onclick="testEndpoint('/api')">Test API Endpoint</button>
+            <button onclick="testStaticFiles()">Test Static Files</button>
+        </div>
+    </div>
+
+    <script>
+        // Display current URL
+        document.getElementById('page-url').textContent = window.location.href;
+        
+        // Display time loaded
+        document.getElementById('time-loaded').textContent = new Date().toLocaleString();
+        
+        // Test an endpoint
+        async function testEndpoint(endpoint) {
+            const debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML = `<p>Testing endpoint: ${endpoint}...</p>`;
+            
+            try {
+                const response = await fetch(endpoint);
+                const status = response.status;
+                const contentType = response.headers.get('content-type');
+                
+                let result;
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    result = JSON.stringify(data, null, 2);
+                } else {
+                    result = await response.text();
+                    if (result.length > 100) {
+                        result = result.substring(0, 100) + '... (truncated)';
+                    }
+                }
+                
+                debugOutput.innerHTML = `
+                    <p>Endpoint: ${endpoint}</p>
+                    <p>Status: ${status}</p>
+                    <p>Response:</p>
+                    <pre>${result}</pre>
+                `;
+            } catch (error) {
+                debugOutput.innerHTML = `
+                    <p>Error testing endpoint ${endpoint}:</p>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+        
+        // Test static files
+        async function testStaticFiles() {
+            const debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML = '<p>Testing static files...</p>';
+            
+            const filesToTest = [
+                '/static/css/a3f50cee5dffc9b6.css',
+                '/static/chunks/webpack-b6f5eb7989d49006.js'
+            ];
+            
+            const results = [];
+            
+            for (const file of filesToTest) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    results.push(`${file}: ${response.ok ? 'OK' : 'Failed'} (${response.status})`);
+                } catch (error) {
+                    results.push(`${file}: Error - ${error.message}`);
+                }
+            }
+            
+            debugOutput.innerHTML = `
+                <p>Static Files Test Results:</p>
+                <ul>
+                    ${results.map(result => `<li>${result}</li>`).join('')}
+                </ul>
+            `;
+        }
+    </script>
+</body>
+</html>

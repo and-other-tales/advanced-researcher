@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .debug-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .debug-label {
+            font-weight: bold;
+            color: #3498db;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Researcher Debug Page</h1>
+    
+    <div class="debug-box">
+        <div class="debug-item">
+            <div class="debug-label">Page Load Status:</div>
+            <div id="page-status">Debug page successfully loaded</div>
+        </div>
+        
+        <div class="debug-item">
+            <div class="debug-label">Location:</div>
+            <div id="location"></div>
+        </div>
+
+        <div class="debug-item">
+            <div class="debug-label">Backend Health Check:</div>
+            <div id="backend-status">Testing...</div>
+            <button onclick="checkBackendHealth()">Check Backend</button>
+        </div>
+
+        <div class="debug-item">
+            <div class="debug-label">Static Files:</div>
+            <div id="static-status">Checking...</div>
+            <button onclick="checkStaticFiles()">Check Static Files</button>
+        </div>
+        
+        <div class="debug-item">
+            <div class="debug-label">Browser Information:</div>
+            <pre id="browser-info"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Display location information
+        document.getElementById('location').textContent = window.location.href;
+        
+        // Browser information
+        const browserInfo = {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            cookiesEnabled: navigator.cookieEnabled,
+            platform: navigator.platform,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height
+        };
+        document.getElementById('browser-info').textContent = JSON.stringify(browserInfo, null, 2);
+        
+        // Check backend health
+        async function checkBackendHealth() {
+            const statusElement = document.getElementById('backend-status');
+            statusElement.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    statusElement.textContent = '✅ Backend is healthy';
+                } else {
+                    statusElement.textContent = '❌ Backend returned unexpected response: ' + JSON.stringify(data);
+                }
+            } catch (error) {
+                statusElement.textContent = '❌ Error connecting to backend: ' + error.message;
+            }
+        }
+        
+        // Check static files
+        async function checkStaticFiles() {
+            const statusElement = document.getElementById('static-status');
+            statusElement.textContent = 'Checking...';
+            
+            const filesToCheck = [
+                '/static/css/a3f50cee5dffc9b6.css',
+                '/static/chunks/webpack-b6f5eb7989d49006.js',
+                '/static/chunks/framework-43665103d101a22d.js'
+            ];
+            
+            const results = [];
+            
+            for (const file of filesToCheck) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    results.push(`${file}: ${response.ok ? '✅' : '❌'} (${response.status})`);
+                } catch (error) {
+                    results.push(`${file}: ❌ Error: ${error.message}`);
+                }
+            }
+            
+            statusElement.innerHTML = results.join('<br>');
+        }
+        
+        // Run checks on page load
+        window.onload = function() {
+            checkBackendHealth();
+            checkStaticFiles();
+        };
+    </script>
+</body>
+</html>

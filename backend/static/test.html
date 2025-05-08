@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+</head>
+<body style="background-color: white; color: black; font-family: Arial, sans-serif; padding: 20px;">
+    <h1>Test Page</h1>
+    <p>This is a simple test page to verify static file serving is working.</p>
+    <p>Current time: <span id="time"></span></p>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toISOString();
+    </script>
+</body>
+</html>

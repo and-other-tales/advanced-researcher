@@ -7,20 +7,137 @@
   <link rel="stylesheet" href="/static/css/a3f50cee5dffc9b6.css">
   <link rel="stylesheet" href="/static/css/8794d08794199149.css">
   <script src="/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script>
+  <style>
+    .debug-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      color: black;
+      z-index: 10000;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .debug-content {
+      margin-bottom: 10px;
+    }
+    .debug-btn {
+      padding: 5px 10px;
+      margin-right: 10px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .debug-hide {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Debug overlay -->
+  <div class="debug-overlay" id="debugOverlay">
+    <div class="debug-content">
+      <h2>Advanced Researcher Debug</h2>
+      <p>Page loaded at: <span id="loadTime"></span></p>
+      <p>URL: <span id="pageUrl"></span></p>
+      <p>Script errors: <span id="scriptErrors">None detected yet</span></p>
+      <p>Static files: <span id="staticFiles">Checking...</span></p>
+      <p>API status: <span id="apiStatus">Checking...</span></p>
+    </div>
+    <button class="debug-btn" onclick="checkStaticFiles()">Check Static Files</button>
+    <button class="debug-btn" onclick="checkAPI()">Check API</button>
+    <button class="debug-btn" onclick="hideDebug()">Hide Debug</button>
+    <button class="debug-btn" onclick="showApp()">Show App</button>
+  </div>
+
   <div id="__next"></div>
-  <script src="/static/chunks/webpack-b6f5eb7989d49006.js"></script>
-  <script src="/static/chunks/framework-43665103d101a22d.js"></script>
-  <script src="/static/chunks/main-fd6f5f099c84769e.js"></script>
-  <script src="/static/chunks/pages/_app-6ca4a4ec31e39f3d.js"></script>
-  <script src="/static/chunks/262-3ac44e6960247799.js"></script>
-  <script src="/static/chunks/fd9d1056-5a1d07d623be4db4.js"></script>
-  <script src="/static/chunks/864-ad54be03b1f104ce.js"></script>
-  <script src="/static/chunks/app/page-0ed5fc94bc869e19.js"></script>
-  <script src="/static/chunks/main-app-91b84db9219a4b72.js"></script>
-  <script src="/static/chunks/app/layout-ea471d6ba58b35e1.js"></script>
-  <script src="/static/Aa6Z2-lDsQt6XwA5YzSwJ/_buildManifest.js"></script>
-  <script src="/static/Aa6Z2-lDsQt6XwA5YzSwJ/_ssgManifest.js"></script>
+  <script src="/static/chunks/webpack-b6f5eb7989d49006.js" onerror="scriptLoadError('webpack')"></script>
+  <script src="/static/chunks/framework-43665103d101a22d.js" onerror="scriptLoadError('framework')"></script>
+  <script src="/static/chunks/main-fd6f5f099c84769e.js" onerror="scriptLoadError('main')"></script>
+  <script src="/static/chunks/pages/_app-6ca4a4ec31e39f3d.js" onerror="scriptLoadError('app')"></script>
+  <script src="/static/chunks/262-3ac44e6960247799.js" onerror="scriptLoadError('262')"></script>
+  <script src="/static/chunks/fd9d1056-5a1d07d623be4db4.js" onerror="scriptLoadError('fd9d1056')"></script>
+  <script src="/static/chunks/864-ad54be03b1f104ce.js" onerror="scriptLoadError('864')"></script>
+  <script src="/static/chunks/app/page-0ed5fc94bc869e19.js" onerror="scriptLoadError('page')"></script>
+  <script src="/static/chunks/main-app-91b84db9219a4b72.js" onerror="scriptLoadError('main-app')"></script>
+  <script src="/static/chunks/app/layout-ea471d6ba58b35e1.js" onerror="scriptLoadError('layout')"></script>
+  <script src="/static/Aa6Z2-lDsQt6XwA5YzSwJ/_buildManifest.js" onerror="scriptLoadError('buildManifest')"></script>
+  <script src="/static/Aa6Z2-lDsQt6XwA5YzSwJ/_ssgManifest.js" onerror="scriptLoadError('ssgManifest')"></script>
+
+  <script>
+    // Debug functions
+    document.getElementById('loadTime').textContent = new Date().toISOString();
+    document.getElementById('pageUrl').textContent = window.location.href;
+    
+    // Track script load errors
+    let errors = [];
+    function scriptLoadError(script) {
+      errors.push(`Failed to load ${script} script`);
+      document.getElementById('scriptErrors').textContent = errors.join(', ');
+    }
+
+    // Check static files
+    async function checkStaticFiles() {
+      const filesToCheck = [
+        '/static/css/a3f50cee5dffc9b6.css',
+        '/static/chunks/webpack-b6f5eb7989d49006.js',
+        '/static/chunks/framework-43665103d101a22d.js'
+      ];
+      
+      const results = [];
+      
+      for (const file of filesToCheck) {
+        try {
+          const response = await fetch(file, { method: 'HEAD' });
+          results.push(`${file.split('/').pop()}: ${response.ok ? '✅' : '❌'}`);
+        } catch (error) {
+          results.push(`${file.split('/').pop()}: ❌ Error: ${error.message}`);
+        }
+      }
+      
+      document.getElementById('staticFiles').innerHTML = results.join(', ');
+    }
+
+    // Check API
+    async function checkAPI() {
+      try {
+        const response = await fetch('/health');
+        const data = await response.json();
+        document.getElementById('apiStatus').textContent = 
+          `Health endpoint: ${data.status === 'ok' ? '✅ OK' : '❌ Error'}`;
+      } catch (error) {
+        document.getElementById('apiStatus').textContent = 
+          `Health endpoint: ❌ Error: ${error.message}`;
+      }
+    }
+
+    // Hide debug overlay
+    function hideDebug() {
+      document.getElementById('debugOverlay').classList.add('debug-hide');
+    }
+
+    // Show React app only (hide Next.js loading elements)
+    function showApp() {
+      const appDiv = document.createElement('div');
+      appDiv.innerHTML = '<h1 style="color: white; padding: 20px;">Advanced Researcher</h1><p style="color: white; padding: 0 20px;">Unable to load the application. Please check the console for errors.</p>';
+      document.body.appendChild(appDiv);
+    }
+
+    // Run checks on page load
+    window.onload = function() {
+      checkStaticFiles();
+      checkAPI();
+    };
+
+    // Catch global errors
+    window.onerror = function(message, source, lineno, colno, error) {
+      errors.push(`JS Error: ${message} (${source}:${lineno}:${colno})`);
+      document.getElementById('scriptErrors').textContent = errors.join(', ');
+      return false;
+    };
+  </script>
 </body>
 </html>

@@ -170,6 +170,31 @@ elif os.path.exists(landing_page):
     async def serve_landing_page():
         """Serve the static landing page."""
         return FileResponse(landing_page)
+    
+    # Add explicit routes for test pages
+    @app.get("/test.html")
+    async def serve_test_page():
+        """Serve the test page."""
+        test_path = os.path.join(static_path, "test.html")
+        if os.path.exists(test_path):
+            return FileResponse(test_path)
+        return {"error": "Test page not found"}
+        
+    @app.get("/debug.html")
+    async def serve_debug_page():
+        """Serve the debug page."""
+        debug_path = os.path.join(static_path, "debug.html")
+        if os.path.exists(debug_path):
+            return FileResponse(debug_path)
+        return {"error": "Debug page not found"}
+        
+    @app.get("/basic.html")
+    async def serve_basic_page():
+        """Serve the basic page."""
+        basic_path = os.path.join(static_path, "basic.html")
+        if os.path.exists(basic_path):
+            return FileResponse(basic_path)
+        return {"error": "Basic page not found"}
 else:
     @app.get("/")
     async def root():

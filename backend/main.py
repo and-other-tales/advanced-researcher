@@ -179,6 +179,23 @@ async def serve_frontend():
             }
         }
 
+# Add explicit routes for test files in the static directory
+@app.get("/test.html")
+async def serve_test_page():
+    """Serve the test page for debugging."""
+    test_path = os.path.join(static_path, "test.html")
+    if os.path.exists(test_path):
+        return FileResponse(test_path)
+    return {"error": "Test page not found"}
+    
+@app.get("/debug.html")
+async def serve_debug_page():
+    """Serve the debug page for troubleshooting."""
+    debug_path = os.path.join(static_path, "debug.html")
+    if os.path.exists(debug_path):
+        return FileResponse(debug_path)
+    return {"error": "Debug page not found"}
+
 
 if __name__ == "__main__":
     import uvicorn
