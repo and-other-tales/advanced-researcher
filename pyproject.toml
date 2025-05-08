@@ -27,7 +27,7 @@ pydantic = "2.11.4"
 requests = "2.32.3"
 uvicorn = "0.34.2"
 voyageai = "0.3.2"
-weaviate-client = "3.26.2"
+weaviate-client = "4.14.1"
 
 
 [tool.poetry.group.lint.dependencies]
