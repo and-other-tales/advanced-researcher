@@ -6,7 +6,7 @@ from uuid import UUID
 from pathlib import Path
 
 import langsmith
-from chain import ChatRequest, answer_chain
+from backend.chain import ChatRequest, answer_chain
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -131,6 +131,12 @@ async def get_trace(body: GetTraceBody):
     return await aget_trace_url(str(run_id))
 
 
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    return {"status": "ok"}
+
+
 # Get project root directory
 project_root = Path(__file__).resolve().parent.parent
 backend_dir = Path(__file__).resolve().parent
@@ -148,27 +154,20 @@ if os.path.exists(static_path):
 # Check for the landing page
 landing_page = os.path.join(static_path, "index.html")
 
-# First check if we have static files in /static directory
+# Mount the static directory if it exists
 if os.path.exists(static_path):
-    # Mount the static directory
     app.mount("/static", StaticFiles(directory=static_path), name="static")
-    
-    @app.get("/")
-    async def serve_index_page():
-        """Serve the index.html file from static directory."""
-        # Check if we have an index.html file in static directory
-        index_path = os.path.join(static_path, "index.html")
-        if os.path.exists(index_path):
-            return FileResponse(index_path)
-        else:
-            # Serve our own welcome page
-            return FileResponse(landing_page)
-else:
-    @app.get("/")
-    async def root():
-        """Root endpoint that provides instructions when frontend is not built."""
+
+# Always serve the frontend directly at the root
+@app.get("/")
+async def serve_frontend():
+    """Serve the frontend directly at the root path."""
+    index_path = os.path.join(static_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    else:
         return {
-            "message": "API server is running. To use the web interface, run the frontend with 'cd frontend && yarn dev'",
+            "message": "API server is running but frontend is not built. Run 'cd frontend && yarn build' to build the frontend.",
             "endpoints": {
                 "chat": "/chat",
                 "api": "/api/*",
