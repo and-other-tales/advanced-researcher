@@ -143,9 +143,11 @@ class ChatRequest(BaseModel):
 def get_retriever() -> BaseRetriever:
     try:
         # Create Weaviate client using v4 API
+        # Ensure URL has schema prefix
+        weaviate_url = WEAVIATE_URL if WEAVIATE_URL.startswith(("http://", "https://")) else f"https://{WEAVIATE_URL}"
         weaviate_client = weaviate.WeaviateClient(
             connection_params=ConnectionParams.from_url(
-                url=WEAVIATE_URL,
+                url=weaviate_url,
                 auth_credentials=AuthApiKey(api_key=WEAVIATE_API_KEY),
             )
         )

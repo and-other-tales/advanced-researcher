@@ -50,8 +50,9 @@ async def get_domain_retriever(query: str, llm: Optional[LanguageModelLike] = No
         import weaviate
         from langchain_community.vectorstores import Weaviate
         
+        weaviate_url = os.environ["WEAVIATE_URL"] if os.environ["WEAVIATE_URL"].startswith(("http://", "https://")) else f"https://{os.environ['WEAVIATE_URL']}"
         weaviate_client = weaviate.Client(
-            url=os.environ["WEAVIATE_URL"],
+            url=weaviate_url,
             auth_client_secret=weaviate.AuthApiKey(api_key=os.environ["WEAVIATE_API_KEY"]),
         )
         
@@ -114,8 +115,9 @@ def get_dynamic_retriever(kb_id: Optional[str] = None) -> BaseRetriever:
         import weaviate
         from langchain_community.vectorstores import Weaviate
         
+        weaviate_url = os.environ["WEAVIATE_URL"] if os.environ["WEAVIATE_URL"].startswith(("http://", "https://")) else f"https://{os.environ['WEAVIATE_URL']}"
         weaviate_client = weaviate.Client(
-            url=os.environ["WEAVIATE_URL"],
+            url=weaviate_url,
             auth_client_secret=weaviate.AuthApiKey(api_key=os.environ["WEAVIATE_API_KEY"]),
         )
         

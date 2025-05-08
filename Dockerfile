@@ -44,6 +44,13 @@ COPY backend/ ./backend/
 RUN mkdir -p ./backend/static
 # Copy pre-built frontend files from frontend-builder stage
 COPY --from=frontend-builder /app/frontend ./backend/static/
+# Copy Next.js build ID files to root of static directory for proper static asset resolution
+RUN if [ -d ./backend/static/_next/static/*/ ]; then \
+    BUILD_ID=$(ls ./backend/static/_next/static/ | grep -v "chunks\|css\|media" | head -n 1); \
+    if [ -n "$BUILD_ID" ]; then \
+        cp -r ./backend/static/_next/static/$BUILD_ID/* ./backend/static/; \
+    fi; \
+fi
 COPY main.py docker-entrypoint.sh .env.example ./
 
 # Ensure entrypoint is executable

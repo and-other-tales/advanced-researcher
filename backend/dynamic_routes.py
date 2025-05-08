@@ -209,8 +209,9 @@ async def delete_knowledge_base(kb_id: str):
             # Delete Weaviate collection
             import weaviate
             
+            weaviate_url = os.environ["WEAVIATE_URL"] if os.environ["WEAVIATE_URL"].startswith(("http://", "https://")) else f"https://{os.environ['WEAVIATE_URL']}"
             weaviate_client = weaviate.Client(
-                url=os.environ["WEAVIATE_URL"],
+                url=weaviate_url,
                 auth_client_secret=weaviate.AuthApiKey(api_key=os.environ["WEAVIATE_API_KEY"]),
             )
             
