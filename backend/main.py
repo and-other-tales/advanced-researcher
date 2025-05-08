@@ -1,12 +1,16 @@
 """Main entrypoint for the app."""
 import asyncio
+import os
 from typing import Optional, Union
 from uuid import UUID
+from pathlib import Path
 
 import langsmith
 from chain import ChatRequest, answer_chain
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from langserve import add_routes
 from langsmith import Client
 from pydantic import BaseModel
@@ -127,7 +131,56 @@ async def get_trace(body: GetTraceBody):
     return await aget_trace_url(str(run_id))
 
 
+# Get project root directory
+project_root = Path(__file__).resolve().parent.parent
+backend_dir = Path(__file__).resolve().parent
+
+# Path to the static files directory
+static_path = os.path.join(backend_dir, "static")
+
+# Path to the frontend build directory
+frontend_path = os.path.join(project_root, "frontend", "public")
+
+# Mount static files directory if it exists
+if os.path.exists(static_path):
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+# Check for the landing page
+landing_page = os.path.join(static_path, "index.html")
+
+# First check if we have a frontend build directory
+if os.path.exists(frontend_path) and os.path.exists(os.path.join(frontend_path, "index.html")):
+    app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
+    
+    @app.get("/")
+    async def serve_frontend_index():
+        """Serve the frontend index.html."""
+        index_path = os.path.join(frontend_path, "index.html")
+        return FileResponse(index_path)
+# If we have a landing page in the static directory, serve that
+elif os.path.exists(landing_page):
+    @app.get("/")
+    async def serve_landing_page():
+        """Serve the static landing page."""
+        return FileResponse(landing_page)
+else:
+    @app.get("/")
+    async def root():
+        """Root endpoint that provides instructions when frontend is not built."""
+        return {
+            "message": "API server is running. To use the web interface, run the frontend with 'cd frontend && yarn dev'",
+            "endpoints": {
+                "chat": "/chat",
+                "api": "/api/*",
+                "health": "/health"
+            }
+        }
+
+
 if __name__ == "__main__":
     import uvicorn
+    import os
 
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    # Get port from environment variable with fallback to 8080
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)

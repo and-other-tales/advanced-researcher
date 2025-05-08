@@ -40,12 +40,12 @@ RUN mkdir -p backend/utils
 # Default environment variables
 ENV DATA_MOUNT_PATH=/data
 ENV HOST=0.0.0.0
-ENV PORT=8080
+ENV PORT=8081
 ENV PYTHONUNBUFFERED=1
 ENV USE_LOCAL=true
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8081
 
 # Command to run the application
 CMD ["python", "main.py"]

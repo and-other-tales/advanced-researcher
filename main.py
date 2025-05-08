@@ -179,8 +179,8 @@ def main():
     check_langsmith()
     
     # Load host and port from environment
-    host = get_env("HOST", "127.0.0.1")
-    port = get_int_env("PORT", 8000)
+    host = get_env("HOST", "0.0.0.0")  # Default to 0.0.0.0 for Cloud Run
+    port = get_int_env("PORT", 8080)  # Default to 8080 for Cloud Run
     reload = get_bool_env("RELOAD", False)
     log_level = get_env("LOG_LEVEL", "info").lower()
     

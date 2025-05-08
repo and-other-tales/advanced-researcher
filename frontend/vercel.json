@@ -3,5 +3,27 @@
     "deploymentEnabled": {
       "main": false
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/chat",
+      "destination": "/chat"
+    },
+    {
+      "source": "/feedback",
+      "destination": "/feedback"
+    },
+    {
+      "source": "/get_trace",
+      "destination": "/get_trace"
+    },
+    {
+      "source": "/health",
+      "destination": "/health"
+    }
+  ]
 }

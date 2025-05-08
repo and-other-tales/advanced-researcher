@@ -46,7 +46,7 @@ This project supports both local deployment and cloud-based deployment.
    yarn dev
    ```
 
-7. Open http://localhost:3000 in your browser.
+7. Open http://localhost:8080 in your browser.
 
 For more detailed instructions, see [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md).
 
@@ -95,6 +95,7 @@ See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions on deploying t
 
 - [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.md): Detailed instructions for local deployment
 - [DEPLOYMENT.md](docs/DEPLOYMENT.md): Detailed instructions for cloud deployment
+- [PORT_CONFIGURATION.md](docs/PORT_CONFIGURATION.md): How the ports are configured for frontend and backend
 - [CONCEPTS.md](docs/CONCEPTS.md): Core concepts used in this project
 - [MODIFY.md](docs/MODIFY.md): Guide for modifying and extending this system
 - [LANGSMITH.md](docs/LANGSMITH.md): How to use LangSmith for tracing and debugging
@@ -128,7 +129,7 @@ See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions on deploying t
 
 ### Deep Research
 ```bash
-curl -X POST http://localhost:8080/api/research \
+curl -X POST http://localhost:8081/api/research \
   -H "Content-Type: application/json" \
   -d '{
     "topic": "The impact of quantum computing on cryptography",
@@ -140,7 +141,7 @@ curl -X POST http://localhost:8080/api/research \
 
 ### Create Knowledge Base
 ```bash
-curl -X POST http://localhost:8080/api/knowledge_bases \
+curl -X POST http://localhost:8081/api/knowledge_bases \
   -H "Content-Type: application/json" \
   -d '{
     "name": "UK Tax Guidance",
@@ -152,7 +153,7 @@ curl -X POST http://localhost:8080/api/knowledge_bases \
 
 ### Create Dataset
 ```bash
-curl -X POST http://localhost:8080/api/datasets \
+curl -X POST http://localhost:8081/api/datasets \
   -H "Content-Type: application/json" \
   -d '{
     "name": "UK Primary Legislation",
@@ -224,7 +225,7 @@ The application uses a comprehensive set of environment variables to configure i
 | `DATA_MOUNT_PATH` | Path for persistent data storage | No | "/data" |
 | `FORCE_UPDATE` | Force update during document ingestion | No | "false" |
 | `HOST` | Host to bind the server to | No | "127.0.0.1" |
-| `PORT` | Port to bind the server to | No | 8000 |
+| `PORT` | Port to bind the server to | No | 8081 |
 | `RELOAD` | Enable auto-reload for development | No | "false" |
 | `LOG_LEVEL` | Logging level (info, debug, warning, error) | No | "info" |
 | `USE_LOCAL` | Use local application with minimal dependencies | No | "false" |

@@ -84,7 +84,7 @@ cd /path/to/advanced-researcher
 python -m backend.main
 ```
 
-The server will start on http://localhost:8080
+The server will start on http://localhost:8081
 
 ### 7. Run the Frontend
 
@@ -93,7 +93,7 @@ cd frontend
 yarn dev
 ```
 
-The frontend will be available at http://localhost:3000
+The frontend will be available at http://localhost:8080
 
 ## Using Ollama for Local LLM Inference (Optional)
 

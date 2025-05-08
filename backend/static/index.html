@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Researcher</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2563eb;
+        }
+        .card {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .button:hover {
+            background-color: #1d4ed8;
+        }
+        code {
+            background-color: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .api-endpoints {
+            margin-top: 30px;
+        }
+        .api-endpoint {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Researcher</h1>
+    
+    <div class="card">
+        <h2>Welcome!</h2>
+        <p>The API server is running successfully, but the web interface is not available at this URL.</p>
+    </div>
+
+    <div class="card">
+        <h2>Available Options</h2>
+        <p><strong>1. Run the frontend separately:</strong></p>
+        <pre><code>cd frontend
+yarn install
+yarn dev</code></pre>
+        <p>This will start the Next.js development server at <a href="http://localhost:8080">http://localhost:8080</a></p>
+        
+        <p><strong>2. Use the API directly:</strong></p>
+        <p>You can interact with the API endpoints directly.</p>
+    </div>
+
+    <div class="api-endpoints card">
+        <h2>API Endpoints</h2>
+        <div class="api-endpoint">
+            <code>/chat</code> - Chat with the assistant
+        </div>
+        <div class="api-endpoint">
+            <code>/api/*</code> - API routes for dynamic ingestion, datasets, deep research, and auto-learning
+        </div>
+        <div class="api-endpoint">
+            <code>/health</code> - Health check endpoint
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Need Help?</h2>
+        <p>For more information, refer to the documentation in the <code>docs/</code> directory.</p>
+    </div>
+</body>
+</html>
