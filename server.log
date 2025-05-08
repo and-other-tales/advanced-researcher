@@ -168,3 +168,4 @@ INFO:     127.0.0.1:46178 - "GET /api/research HTTP/1.1" 405 Method Not Allowed
 INFO:     127.0.0.1:39564 - "GET /api/research/status HTTP/1.1" 200 OK
 INFO:     127.0.0.1:39574 - "GET /api/learning HTTP/1.1" 404 Not Found
 INFO:     123.57.165.38:43034 - "GET /containers/json HTTP/1.1" 404 Not Found
+INFO:     154.81.156.35:57212 - "GET / HTTP/1.1" 200 OK
