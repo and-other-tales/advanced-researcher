@@ -1,28 +1,40 @@
 #!/bin/bash
 set -e
 
-# Check if we already have essential environment variables set
-HAS_ENV_VARS=false
-if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ] || [ -n "$FIREWORKS_API_KEY" ] || [ "$USE_OLLAMA" = "true" ]; then
-    HAS_ENV_VARS=true
-fi
+# Print banner
+echo "======================================"
+echo "Advanced Researcher - Docker Entrypoint"
+echo "======================================"
 
-# Create .env file if it doesn't exist and we don't have environment variables set
-if [ ! -f .env ] && [ "$HAS_ENV_VARS" = "false" ]; then
-    echo "No environment variables found. Creating .env file from .env.example"
-    if [ -f .env.example ]; then
-        cp .env.example .env
-    else
-        echo "Warning: No environment variables found and no .env.example file exists"
-    fi
-fi
+# Check if essential directories exist
+mkdir -p /data
+mkdir -p /app/backend/utils
+mkdir -p /app/backend/static
 
-# Ensure backend/utils/__init__.py exists
+# Ensure required Python modules exist
 if [ ! -f /app/backend/utils/__init__.py ]; then
     echo "Creating backend/utils/__init__.py"
     cat > /app/backend/utils/__init__.py << 'EOF'
 """Utility modules for the Advanced Researcher project."""
 EOF
+fi
+
+# Check if we already have essential environment variables set
+HAS_ENV_VARS=false
+if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ] || [ -n "$FIREWORKS_API_KEY" ] || [ "$USE_OLLAMA" = "true" ]; then
+    HAS_ENV_VARS=true
+    echo "Using environment variables from container environment"
+fi
+
+# Create .env file if it doesn't exist and we don't have environment variables set
+if [ ! -f /app/.env ] && [ "$HAS_ENV_VARS" = "false" ]; then
+    echo "No environment variables found. Creating .env file from .env.example"
+    if [ -f /app/.env.example ]; then
+        cp /app/.env.example /app/.env
+        echo "Created .env file from template. Review and adjust if needed."
+    else
+        echo "Warning: No environment variables found and no .env.example file exists"
+    fi
 fi
 
 # Check if environment is properly configured
@@ -57,11 +69,28 @@ else
     echo "LangSmith tracing is disabled"
 fi
 
+# Check if data directory is mounted
+if [ ! -d "$DATA_MOUNT_PATH" ]; then
+    echo "Creating data directory at $DATA_MOUNT_PATH"
+    mkdir -p "$DATA_MOUNT_PATH"
+    chmod 777 "$DATA_MOUNT_PATH"
+fi
+
+# Set correct working directory
+cd /app
+
+# Print startup information
+echo "Starting application with configuration:"
+echo "- Host: $HOST"
+echo "- Port: $PORT"
+echo "- Data path: $DATA_MOUNT_PATH"
+echo "- Local mode: $USE_LOCAL"
+
 # Run the application with the correct command
 if [ "$USE_LOCAL" = "true" ]; then
-    echo "Starting local application on $HOST:$PORT"
-    exec python -m backend.local_main
+    echo "Starting local application (backend.local_main)"
+    exec python main.py
 else
-    echo "Starting standard application on $HOST:$PORT"
-    exec python -m main
+    echo "Starting standard application (main.py)"
+    exec python main.py
 fi

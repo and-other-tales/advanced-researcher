@@ -28,24 +28,25 @@ RUN mkdir -p /data && chmod 777 /data
 
 # Copy application code
 COPY backend/ ./backend/
-COPY frontend/app/utils/constants.tsx ./frontend/app/utils/constants.tsx
-COPY main.py .env.example ./
+COPY frontend/out/ ./backend/static/
+COPY main.py docker-entrypoint.sh .env.example ./
 
-# Ensure .env file from host isn't used inside container
-RUN rm -f .env
+# Ensure entrypoint is executable
+RUN chmod +x /app/docker-entrypoint.sh
 
-# Ensure backend/utils directory exists
+# Ensure utilities directories exist
 RUN mkdir -p backend/utils
+RUN touch backend/utils/__init__.py
+RUN touch backend/static/__init__.py
 
 # Default environment variables
 ENV DATA_MOUNT_PATH=/data
 ENV HOST=0.0.0.0
-ENV PORT=8081
+ENV PORT=8080
 ENV PYTHONUNBUFFERED=1
-ENV USE_LOCAL=true
 
 # Expose port
-EXPOSE 8081
+EXPOSE 8080
 
-# Command to run the application
-CMD ["python", "main.py"]
+# Use entrypoint script
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

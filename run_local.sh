@@ -1,10 +1,27 @@
 #!/bin/bash
 set -e
 
+echo "=========================================="
+echo "Advanced Researcher - Local Startup Script"
+echo "=========================================="
+
+# Create data directory if it doesn't exist
+DATA_DIR="./data"
+mkdir -p "$DATA_DIR"
+DATA_MOUNT_PATH="$(realpath $DATA_DIR)"
+echo "Using data directory: $DATA_MOUNT_PATH"
+
+# Create backend directories if they don't exist
+mkdir -p backend/utils
+mkdir -p backend/static
+touch backend/utils/__init__.py
+touch backend/static/__init__.py
+
 # Check if we already have essential environment variables set
 HAS_ENV_VARS=false
 if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_KEY" ] || [ -n "$FIREWORKS_API_KEY" ] || [ "$USE_OLLAMA" = "true" ]; then
     HAS_ENV_VARS=true
+    echo "Using environment variables from system environment"
 fi
 
 # Create .env file if it doesn't exist and we don't have environment variables set
@@ -17,9 +34,13 @@ if [ ! -f .env ] && [ "$HAS_ENV_VARS" = "false" ]; then
     else
         echo "Warning: No .env.example file exists"
     fi
-elif [ "$HAS_ENV_VARS" = "true" ]; then
-    echo "Using environment variables from system environment"
 fi
+
+# Set default values for HOST and PORT
+export HOST=${HOST:-"127.0.0.1"}
+export PORT=${PORT:-"8080"}
+export DATA_MOUNT_PATH=${DATA_MOUNT_PATH:-"$DATA_MOUNT_PATH"}
+export USE_LOCAL=true
 
 # Run verification script to check for required credentials
 echo "Verifying environment setup..."
@@ -57,14 +78,33 @@ try:
     else:
         print('Environment verified successfully!')
         
-        # Get host and port
+        # Get host and port from environment
         host = os.environ.get('HOST', '127.0.0.1')
-        port = int(os.environ.get('PORT', '8000'))
+        port = int(os.environ.get('PORT', '8080'))
         print(f'Server will be available at http://{host}:{port}')
 except Exception as e:
     print(f'Warning: Verification error: {e}. Continuing anyway.')
 "
 
-# Run the server with the centralized entrypoint and local flag
+# Check if frontend static files exist
+if [ ! -d "backend/static/app" ] && [ -d "frontend" ]; then
+    echo "Frontend static files not found. Do you want to build the frontend now? (y/n)"
+    read -r build_frontend
+    if [ "$build_frontend" = "y" ]; then
+        echo "Building frontend..."
+        ./build_and_deploy.sh
+    else
+        echo "Continuing without frontend build. Note that the web UI may not work correctly."
+    fi
+fi
+
+# Print startup information
+echo "Starting application with configuration:"
+echo "- Host: $HOST"
+echo "- Port: $PORT"
+echo "- Data path: $DATA_MOUNT_PATH"
+echo "- Local mode: enabled"
+
+# Run the server with the correct configuration
 echo "Starting local server..."
-USE_LOCAL=true DATA_MOUNT_PATH=/tmp/data python -m main
+python main.py

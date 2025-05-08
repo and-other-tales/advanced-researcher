@@ -1,0 +1,170 @@
+2025-05-08 10:00:43,353 - backend.utils.env - INFO - Loading environment variables from /home/david/advanced-researcher/.env
+2025-05-08 10:00:43,355 - __main__ - INFO - Environment loaded from /home/david/advanced-researcher/.env
+2025-05-08 10:00:43,356 - __main__ - INFO - LangSmith tracing is disabled
+2025-05-08 10:00:46,643 - langchain_community.utils.user_agent - WARNING - USER_AGENT environment variable not set, consider setting it to identify your requests.
+Error setting up knowledge base directory: [Errno 13] Permission denied: '/data'
+Using fallback knowledge base directory: /tmp
+Error creating learning directory: [Errno 13] Permission denied: '/data'
+Using fallback learning directory: /tmp/auto_learning
+2025-05-08 10:00:48,479 - backend.auto_learn - INFO - Loaded 0 learning tasks from disk
+2025-05-08 10:00:48,485 - root - INFO - LangSmith tracing disabled - using no-op client
+2025-05-08 10:00:48,489 - langsmith.client - WARNING - Failed to get info from http://localhost:8000: LangSmithConnectionError('Connection error caused failure to GET /info in LangSmith API. Please confirm your LANGCHAIN_ENDPOINT. ConnectionError(MaxRetryError("HTTPConnectionPool(host=\'localhost\', port=8000): Max retries exceeded with url: /info (Caused by NewConnectionError(\'<urllib3.connection.HTTPConnection object at 0x7f27312b12b0>: Failed to establish a new connection: [Errno 111] Connection refused\'))"))\nContent-Length: None\nAPI Key: no-op**ey')
+Failed to connect to Weaviate: Weaviate did not start up in 1 seconds. Either the Weaviate URL https://your-weaviate-cluster.weaviate.network is wrong or Weaviate did not start up in the interval given in 'startup_period'.. Falling back to Chroma.
+2025-05-08 10:00:50,401 - numexpr.utils - INFO - NumExpr defaulting to 2 threads.
+2025-05-08 10:00:50,953 - datasets - INFO - PyTorch version 2.3.1 available.
+Error creating dataset directory: [Errno 13] Permission denied: '/data'
+Using fallback dataset directory: /tmp
+2025-05-08 10:00:51,368 - backend.dataset_creator - INFO - Using temporary directory for datasets: /tmp
+/home/david/.venv/lib/python3.12/site-packages/fireworks/client/image_api.py:131: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+  @validator("image_strength", pre=True, always=True)
+/home/david/.venv/lib/python3.12/site-packages/fireworks/client/image_api.py:139: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+  @validator("step_schedule_start", "step_schedule_end", pre=True, always=True)
+Error creating research directory: [Errno 13] Permission denied: '/data'
+Using fallback research directory: /tmp/deep_research
+2025-05-08 10:00:52,113 - backend.deep_research - INFO - Loaded 0 research requests from disk
+2025-05-08 10:00:52,518 - __main__ - INFO - Starting local application (no external dependencies)
+2025-05-08 10:00:52,519 - __main__ - INFO - Running with host=0.0.0.0, port=8080, reload=False
+/home/david/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+  warnings.warn(  # deprecated in 14.0 - 2024-11-09
+/home/david/.venv/lib/python3.12/site-packages/uvicorn/protocols/websockets/websockets_impl.py:16: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+  from websockets.server import WebSocketServerProtocol
+INFO:     Started server process [12511]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+
+     __          ___      .__   __.   _______      _______. _______ .______     ____    ____  _______
+    |  |        /   \     |  \ |  |  /  _____|    /       ||   ____||   _  \    \   \  /   / |   ____|
+    |  |       /  ^  \    |   \|  | |  |  __     |   (----`|  |__   |  |_)  |    \   \/   /  |  |__
+    |  |      /  /_\  \   |  . `  | |  | |_ |     \   \    |   __|  |      /      \      /   |   __|
+    |  `----./  _____  \  |  |\   | |  |__| | .----)   |   |  |____ |  |\  \----.  \    /    |  |____
+    |_______/__/     \__\ |__| \__|  \______| |_______/    |_______|| _| `._____|   \__/     |_______|
+    
+[1;32;40mLANGSERVE:[0m Playground for chain "/chat/" is live at:
+[1;32;40mLANGSERVE:[0m  │
+[1;32;40mLANGSERVE:[0m  └──> /chat/playground/
+[1;32;40mLANGSERVE:[0m
+[1;32;40mLANGSERVE:[0m See all available routes at /docs/
+INFO:     127.0.0.1:49368 - "GET /api HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49384 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49394 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:51016 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51026 - "GET /docs HTTP/1.1" 200 OK
+2025-05-08 10:01:26,962 - backend.dynamic_chain - INFO - Domain detection for query: 'Hello, how are you?...' -> DomainType.GENERAL (confidence: 0.3, graph: GeneralKnowledge)
+2025-05-08 10:01:27,260 - langsmith.client - WARNING - Failed to multipart ingest runs: langsmith.utils.LangSmithError: Failed to POST https://api.smith.langchain.com/runs/multipart in LangSmith API. HTTPError('403 Client Error: Forbidden for url: https://api.smith.langchain.com/runs/multipart', '{"error":"Forbidden"}\n')
+2025-05-08 10:01:32,007 - backend.dynamic_chain - ERROR - Error getting domain retriever: Weaviate did not start up in 5 seconds. Either the Weaviate URL https://your-weaviate-cluster.weaviate.network is wrong or Weaviate did not start up in the interval given in 'startup_period'.
+Failed to connect to Weaviate: Weaviate did not start up in 1 seconds. Either the Weaviate URL https://your-weaviate-cluster.weaviate.network is wrong or Weaviate did not start up in the interval given in 'startup_period'.. Falling back to Chroma.
+INFO:     127.0.0.1:39454 - "POST /chat/invoke HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/david/.venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/david/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langserve/server.py", line 503, in invoke
+    return await api_handler.invoke(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langserve/api_handler.py", line 896, in invoke
+    output = await invoke_coro
+             ^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 5429, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3075, in ainvoke
+    input = await coro_with_context(part(), context, create_task=True)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 5429, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3075, in ainvoke
+    input = await coro_with_context(part(), context, create_task=True)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 5429, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 4783, in ainvoke
+    return await self._acall_with_config(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 1981, in _acall_with_config
+    output: Output = await coro_with_context(coro, context)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 4715, in _ainvoke
+    output = await acall_func_with_variable_args(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 4685, in f
+    return await run_in_executor(config, func, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/config.py", line 616, in run_in_executor
+    return await asyncio.get_running_loop().run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/config.py", line 607, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 4679, in func
+    return call_func_with_variable_args(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/config.py", line 428, in call_func_with_variable_args
+    return func(input, **kwargs)  # type: ignore[call-arg]
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/advanced-researcher/backend/local_chain.py", line 260, in retrieve_and_filter_docs
+    retriever_result = create_retriever_chain(llm, retriever).invoke(inputs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/advanced-researcher/backend/local_chain.py", line 211, in create_retriever_chain
+    conversation_chain = condense_question_chain | retriever
+                         ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 574, in __or__
+    return RunnableSequence(self, coerce_to_runnable(other))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/david/.venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 5915, in coerce_to_runnable
+    raise TypeError(msg)
+TypeError: Expected a Runnable, callable or dict.Instead got an unsupported type: <class 'NoneType'>
+2025-05-08 10:01:33,252 - langsmith.client - WARNING - Failed to multipart ingest runs: langsmith.utils.LangSmithError: Failed to POST https://api.smith.langchain.com/runs/multipart in LangSmith API. HTTPError('403 Client Error: Forbidden for url: https://api.smith.langchain.com/runs/multipart', '{"error":"Forbidden"}\n')
+INFO:     127.0.0.1:57852 - "GET /api/knowledge_bases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57854 - "GET /chat/playground/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46166 - "GET /api/datasets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46178 - "GET /api/research HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:39564 - "GET /api/research/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39574 - "GET /api/learning HTTP/1.1" 404 Not Found
+INFO:     123.57.165.38:43034 - "GET /containers/json HTTP/1.1" 404 Not Found

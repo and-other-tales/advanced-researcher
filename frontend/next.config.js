@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Note: we cannot use export and rewrites together
+  // Enable static export
+  output: 'export',
   distDir: 'out',
+  
+  // Required for static export
+  images: {
+    unoptimized: true,
+  },
   
   // Simplified security headers to avoid potential conflicts
   async headers() {
@@ -31,12 +37,18 @@ const nextConfig = {
     ];
   },
   
+  // Note: rewrites and static export (output: 'export') cannot be used together
+  // This configuration will be ignored when building for export
   async rewrites() {
+    // Only used in development mode or when not exporting
+    if (process.env.NEXT_PHASE === 'phase-production-build' && process.env.NEXT_EXPORT === 'true') {
+      return [];
+    }
+    
     // Use environment variables to configure the backend URL or default to current origin
-    // This lets the app work in Cloud Run where backend and frontend run on same port
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 
                        process.env.BACKEND_URL || 
-                       (process.env.NODE_ENV === 'development' ? 'http://localhost:8081' : '');
+                       (process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : '');
     
     const routes = ['/api/:path*', '/chat', '/feedback', '/get_trace', '/health'];
     
@@ -44,7 +56,7 @@ const nextConfig = {
       const path = route.endsWith('*') ? route : route;
       const destination = backendUrl ? 
         `${backendUrl}${path}` : 
-        path; // Empty backendUrl means same-origin proxy
+        path;
       
       return {
         source: path,
@@ -53,9 +65,8 @@ const nextConfig = {
     });
   },
   
-  // Server runtime config
+  // Server runtime config - only used when not exporting
   serverRuntimeConfig: {
-    // This will be available on the server side
     blockHeaderPatterns: ['x-middleware-subrequest'],
   },
 };

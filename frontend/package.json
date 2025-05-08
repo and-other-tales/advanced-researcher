@@ -1,11 +1,12 @@
 {
-  "name": "frontend",
+  "name": "advanced-researcher-frontend",
   "version": "0.1.0",
   "private": true,
   "packageManager": "yarn@1.22.19",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export || echo 'Export included in build with output:export config'",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write ."
