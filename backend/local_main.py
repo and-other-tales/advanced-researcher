@@ -42,6 +42,20 @@ add_routes(
     config_keys=["metadata", "configurable", "tags"],
 )
 
+# Add a root API endpoint
+@app.get("/api")
+async def api_root():
+    """API root endpoint that returns available endpoints."""
+    return {
+        "status": "ok",
+        "endpoints": {
+            "knowledge_bases": "/api/knowledge_bases",
+            "datasets": "/api/datasets",
+            "research": "/api/research",
+            "learning": "/api/learning"
+        }
+    }
+
 # Add dynamic ingestion routes
 app.include_router(dynamic_routes, prefix="/api")
 
@@ -146,7 +160,7 @@ backend_dir = Path(__file__).resolve().parent
 static_path = os.path.join(backend_dir, "static")
 
 # Path to the frontend build directory
-frontend_path = os.path.join(project_root, "frontend", "public")
+frontend_path = os.path.join(project_root, "frontend", "out")
 
 # Mount static files directory if it exists
 if os.path.exists(static_path):
