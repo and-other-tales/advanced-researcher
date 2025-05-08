@@ -7,6 +7,15 @@ import { useEffect } from "react";
 
 import { ChakraProvider } from "@chakra-ui/react";
 
+// Clear any potential Directus-related properties from the window object
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  if (window.__DIRECTUS_CONFIG) {
+    // @ts-ignore
+    delete window.__DIRECTUS_CONFIG;
+  }
+}
+
 export default function Home() {
   // Add debugging code
   useEffect(() => {
