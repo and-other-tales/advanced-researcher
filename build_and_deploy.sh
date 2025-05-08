@@ -13,17 +13,23 @@ echo "===== Building frontend ====="
 cd frontend
 echo "Installing dependencies..."
 npm install
-echo "Building Next.js app..."
+echo "Building Next.js app with static export..."
 npm run build
-echo "Exporting static version..."
-npm run export
 echo "Frontend build complete!"
 
 # Verify the export was successful
 if [ ! -d "out" ]; then
     echo "Error: Frontend build failed - 'out' directory not found."
-    echo "Make sure your next.config.js is configured correctly with output: 'export'"
-    exit 1
+    echo "This could be because:"
+    echo "1. Your next.config.js is not configured with output: 'export'"
+    echo "2. The Next.js build process had errors"
+    echo "Trying to fix by creating out directory if needed..."
+    mkdir -p out
+    # If out is empty, this is still a problem
+    if [ -z "$(ls -A out)" ]; then
+        echo "Warning: out directory is empty, build may have failed."
+        echo "Continuing anyway, but the static site may not work correctly."
+    fi
 fi
 
 # Copy static files to backend

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export || echo 'Export included in build with output:export config'",
+    "export": "echo 'Export included in build with output:export config'",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write ."
