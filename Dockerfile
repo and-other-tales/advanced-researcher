@@ -30,8 +30,8 @@ RUN mkdir -p /data && chmod 777 /data
 COPY backend/ ./backend/
 # Create static directory if not exists
 RUN mkdir -p ./backend/static
-# Copy frontend/out/ if it exists, otherwise the directory will already be created
-COPY frontend/out/ ./backend/static/ 2>/dev/null || true
+# Copy frontend/out/ directory
+COPY frontend/out/ ./backend/static/
 COPY main.py docker-entrypoint.sh .env.example ./
 
 # Ensure entrypoint is executable
