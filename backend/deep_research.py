@@ -21,7 +21,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_fireworks import ChatFireworks
 import httpx
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Import verification components
 from backend.verification import get_verification_components
@@ -94,17 +94,17 @@ class ResearchRequest(BaseModel):
     min_sites: Optional[int] = None
     max_sites: Optional[int] = None
     
-    @validator("min_documents", "max_documents", "min_sites", "max_sites", pre=True, always=False)
-    def set_defaults_based_on_depth(cls, v, values):
+    @field_validator("min_documents", "max_documents", "min_sites", "max_sites", mode="before")
+    def set_defaults_based_on_depth(cls, v, info):
         """Set default values based on the depth level if not provided."""
         if v is not None:
             return v
             
-        depth = values.get("depth_level")
+        depth = info.data.get("depth_level")
         if depth is None:
             return v
             
-        field_name = [k for k, val in values.items() if val is v][0]
+        field_name = info.field_name
         
         if depth == ResearchDepthLevel.GENERAL_REFERENCE:
             if field_name == "min_documents":
