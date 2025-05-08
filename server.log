@@ -171,3 +171,14 @@ INFO:     123.57.165.38:43034 - "GET /containers/json HTTP/1.1" 404 Not Found
 INFO:     154.81.156.35:57212 - "GET / HTTP/1.1" 200 OK
 INFO:     85.208.84.69:46762 - "GET /securityRealm/user/admin/search/index?q=a HTTP/1.1" 404 Not Found
 INFO:     85.208.84.69:54614 - "GET / HTTP/1.1" 200 OK
+INFO:     85.208.84.69:57914 - "POST /Autodiscover/Autodiscover.xml HTTP/1.1" 404 Not Found
+INFO:     85.208.84.69:56068 - "POST /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php HTTP/1.1" 404 Not Found
+INFO:     85.208.84.69:48346 - "GET /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php HTTP/1.1" 404 Not Found
+INFO:     104.236.145.10:44769 - "GET / HTTP/1.0" 200 OK
+INFO:     85.208.84.69:38448 - "GET /?XDEBUG_SESSION_START=phpstorm HTTP/1.1" 200 OK
+INFO:     85.208.84.69:45214 - "GET /console/ HTTP/1.1" 404 Not Found
+INFO:     85.208.84.69:55984 - "GET /_ignition/execute-solution HTTP/1.1" 404 Not Found
+INFO:     85.208.84.69:58400 - "GET / HTTP/1.1" 200 OK
+INFO:     85.208.84.69:40784 - "GET / HTTP/1.1" 200 OK
+INFO:     85.208.84.69:33336 - "GET /actuator/gateway/routes HTTP/1.1" 404 Not Found
+INFO:     85.208.84.69:57096 - "GET /geoserver HTTP/1.1" 404 Not Found

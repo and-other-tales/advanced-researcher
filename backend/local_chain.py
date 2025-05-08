@@ -148,13 +148,19 @@ def get_retriever() -> BaseRetriever:
         # Use Weaviate if configured and not using Ollama
         try:
             import weaviate
+            from weaviate.auth import AuthApiKey
+            from weaviate.connect import ConnectionParams
             from langchain_community.vectorstores import Weaviate
             from backend.constants import WEAVIATE_DOCS_INDEX_NAME
             
-            weaviate_client = weaviate.Client(
-                url=WEAVIATE_URL,
-                auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
-                startup_period=1  # Shorter timeout
+            # Create Weaviate client using v4 API
+            weaviate_client = weaviate.WeaviateClient(
+                connection_params=ConnectionParams.from_url(
+                    url=WEAVIATE_URL,
+                    auth_credentials=AuthApiKey(api_key=WEAVIATE_API_KEY),
+                    grpc_port=None,  # Shorter timeout - use HTTP API only
+                    timeout=1.0
+                )
             )
             vectorstore = Weaviate(
                 client=weaviate_client,

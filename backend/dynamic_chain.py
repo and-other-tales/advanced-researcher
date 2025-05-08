@@ -21,6 +21,10 @@ class ChatRequestWithKB(BaseModel):
     question: str
     chat_history: Optional[List[Dict[str, str]]] = None
     knowledge_base_id: Optional[str] = None
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 async def get_domain_retriever(query: str, llm: Optional[LanguageModelLike] = None) -> BaseRetriever:

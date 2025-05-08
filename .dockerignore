@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Node.js
+node_modules
+npm-debug.log
+frontend/node_modules
+frontend/.next
+# We need the pre-built frontend files
+# frontend/out
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Docker
+.dockerignore
+
+# Chroma
+chroma_db/
+
+# Misc
+.vscode
+.idea
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+server.log
+debug_*.py
+terraform/
+_scripts/

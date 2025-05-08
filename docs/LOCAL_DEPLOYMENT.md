@@ -129,6 +129,28 @@ python -m backend.ingest --dir /path/to/your/documents
 - If the backend fails to start, check your `.env` file for proper configuration.
 - For any LangChain-specific errors, check the logs for detailed error messages.
 
+## Docker Deployment
+
+You can also build and run the entire application in Docker:
+
+```bash
+# Build the application (the Dockerfile handles frontend compilation in a multi-stage build)
+docker build -t advanced-researcher .
+```
+
+The Dockerfile uses a multi-stage build process that:
+1. First builds the frontend using Node.js in an Alpine-based container
+2. Then creates the Python application container and copies the built frontend assets
+3. This approach eliminates the need to build the frontend separately
+
+To run the Docker container:
+
+```bash
+docker run -p 8080:8080 -e OPENAI_API_KEY=your-key advanced-researcher
+```
+
+The application will be available at http://localhost:8080.
+
 ## Additional Resources
 
 - [Chroma Documentation](https://docs.trychroma.com/)

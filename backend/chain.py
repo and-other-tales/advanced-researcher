@@ -5,10 +5,12 @@ from operator import itemgetter
 from typing import Dict, List, Optional, Sequence, Any, Union
 
 import weaviate
-from constants import WEAVIATE_DOCS_INDEX_NAME
+from weaviate.auth import AuthApiKey
+from weaviate.connect import ConnectionParams
+from backend.constants import WEAVIATE_DOCS_INDEX_NAME
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from ingest import get_embeddings_model
+from backend.ingest import get_embeddings_model
 from langchain_anthropic import ChatAnthropic
 from langchain_community.chat_models import ChatCohere
 from langchain_community.vectorstores import Weaviate
@@ -132,22 +134,36 @@ class ChatRequest(BaseModel):
     question: str
     chat_history: Optional[List[Dict[str, str]]] = None
     knowledge_base_id: Optional[str] = None
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 def get_retriever() -> BaseRetriever:
-    weaviate_client = weaviate.Client(
-        url=WEAVIATE_URL,
-        auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
-    )
-    weaviate_client = Weaviate(
-        client=weaviate_client,
-        index_name=WEAVIATE_DOCS_INDEX_NAME,
-        text_key="text",
-        embedding=get_embeddings_model(),
-        by_text=False,
-        attributes=["source", "title"],
-    )
-    return weaviate_client.as_retriever(search_kwargs=dict(k=6))
+    try:
+        # Create Weaviate client using v4 API
+        weaviate_client = weaviate.WeaviateClient(
+            connection_params=ConnectionParams.from_url(
+                url=WEAVIATE_URL,
+                auth_credentials=AuthApiKey(api_key=WEAVIATE_API_KEY),
+            )
+        )
+        
+        # Create LangChain vectorstore with the client
+        vectorstore = Weaviate(
+            client=weaviate_client,
+            index_name=WEAVIATE_DOCS_INDEX_NAME,
+            text_key="text",
+            embedding=get_embeddings_model(),
+            by_text=False,
+            attributes=["source", "title"],
+        )
+        return vectorstore.as_retriever(search_kwargs=dict(k=6))
+    except Exception as e:
+        logger.warning(f"Error initializing Weaviate retriever: {e}")
+        # Fall back to another retriever or raise the exception
+        raise
 
 
 def create_retriever_chain(

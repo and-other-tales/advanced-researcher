@@ -2,11 +2,13 @@
 import logging
 import os
 import re
-from parser import langchain_docs_extractor
+from backend.parser import langchain_docs_extractor
 
 import weaviate
+from weaviate.auth import AuthApiKey
+from weaviate.connect import ConnectionParams
 from bs4 import BeautifulSoup, SoupStrainer
-from constants import WEAVIATE_DOCS_INDEX_NAME
+from backend.constants import WEAVIATE_DOCS_INDEX_NAME
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader
 from langchain.indexes import SQLRecordManager, index
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -14,6 +16,7 @@ from langchain_core.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNO
 from langchain_community.vectorstores import Weaviate
 from langchain_core.embeddings import Embeddings
 from langchain_openai import OpenAIEmbeddings
+from backend.html_to_markdown import process_documents, initialize_model
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -102,10 +105,24 @@ def ingest_docs():
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
     embedding = get_embeddings_model()
 
-    client = weaviate.Client(
-        url=WEAVIATE_URL,
-        auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
+    # Initialize HTML to Markdown model
+    try:
+        # Use CPU by default, can be overridden with environment variable
+        device = os.environ.get("HTML_TO_MD_DEVICE", "cpu")
+        initialize_model(device)
+        logger.info(f"HTML to Markdown model initialized on {device}")
+    except Exception as e:
+        logger.warning(f"Failed to initialize HTML to Markdown model: {e}")
+
+    # Create Weaviate client using v4 API
+    client = weaviate.WeaviateClient(
+        connection_params=ConnectionParams.from_url(
+            url=WEAVIATE_URL,
+            auth_credentials=AuthApiKey(api_key=WEAVIATE_API_KEY),
+        )
     )
+    
+    # Create LangChain vectorstore with the client
     vectorstore = Weaviate(
         client=client,
         index_name=WEAVIATE_DOCS_INDEX_NAME,
@@ -132,6 +149,14 @@ def ingest_docs():
     )
     docs_transformed = [doc for doc in docs_transformed if len(doc.page_content) > 10]
 
+    # Convert HTML to Markdown before indexing
+    try:
+        logger.info("Converting HTML to Markdown...")
+        docs_transformed = process_documents(docs_transformed)
+        logger.info("HTML to Markdown conversion completed")
+    except Exception as e:
+        logger.warning(f"Error during HTML to Markdown conversion: {e}")
+
     # We try to return 'source' and 'title' metadata when querying vector store and
     # Weaviate will error at query time if one of the attributes is missing from a
     # retrieved document.
@@ -151,7 +176,11 @@ def ingest_docs():
     )
 
     logger.info(f"Indexing stats: {indexing_stats}")
-    num_vecs = client.query.aggregate(WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
+    
+    # Get vector count in v4 API
+    collection = client.collections.get(WEAVIATE_DOCS_INDEX_NAME)
+    num_vecs = collection.aggregate.over_all().with_meta_count().do()
+    
     logger.info(
         f"LangChain now has this many vectors: {num_vecs}",
     )

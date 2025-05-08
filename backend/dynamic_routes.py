@@ -21,11 +21,19 @@ class KnowledgeBase(BaseModel):
     source: str
     document_count: int
     user_id: Optional[str] = None
+    
+    model_config = {
+        "extra": "allow"
+    }
 
 
 class ListKnowledgeBasesResponse(BaseModel):
     """Response containing available knowledge bases."""
     knowledge_bases: List[KnowledgeBase]
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 class CreateKnowledgeBaseRequest(BaseModel):
@@ -35,6 +43,10 @@ class CreateKnowledgeBaseRequest(BaseModel):
     url: str
     max_depth: int = 8
     user_id: Optional[str] = None
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 # Knowledge base metadata storage
@@ -68,7 +80,7 @@ def save_knowledge_bases():
     """Save knowledge bases to persistent storage."""
     try:
         with open(KB_METADATA_FILE, 'w') as f:
-            json.dump([kb.dict() for kb in KNOWLEDGE_BASES], f)
+            json.dump([kb.model_dump() for kb in KNOWLEDGE_BASES], f)
         logger.info(f"Saved {len(KNOWLEDGE_BASES)} knowledge bases to {KB_METADATA_FILE}")
     except Exception as e:
         logger.error(f"Failed to save knowledge bases: {e}")

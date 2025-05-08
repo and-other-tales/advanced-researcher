@@ -163,10 +163,11 @@ frontend_out_path = os.path.join(project_root, "frontend", "out")
 
 # First check if frontend/out exists (production build)
 if os.path.exists(frontend_out_path):
-    app.mount("/static", StaticFiles(directory=os.path.join(frontend_out_path, "static")), name="static")
+    # Mount the _next directory directly to serve assets at /_next
+    app.mount("/_next", StaticFiles(directory=os.path.join(static_path, "_next")), name="next_static")
     
-# Then check if backend/static exists (copied static files)
-elif os.path.exists(static_path):
+# Also mount /static for backward compatibility
+if os.path.exists(static_path):
     app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 # Always serve the frontend directly at the root

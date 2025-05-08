@@ -2,7 +2,7 @@
 import logging
 import os
 import re
-from parser import langchain_docs_extractor
+from backend.parser import langchain_docs_extractor
 
 from bs4 import BeautifulSoup, SoupStrainer
 from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoader

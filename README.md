@@ -54,6 +54,18 @@ For more detailed instructions, see [LOCAL_DEPLOYMENT.md](docs/LOCAL_DEPLOYMENT.
 
 See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed instructions on deploying to Vercel + GCP Cloud Run.
 
+### For Docker Deployment:
+
+1. Build directly with Docker (multi-stage build handles frontend compilation):
+   ```bash
+   docker build -t advanced-researcher .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 8080:8080 -e OPENAI_API_KEY=your-key advanced-researcher
+   ```
+
 ## Features
 
 ### Core Capabilities

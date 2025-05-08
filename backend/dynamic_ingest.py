@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from backend.local_embeddings import get_embeddings_model
 from backend.verification import get_verification_components
+from backend.html_to_markdown import process_documents, initialize_model
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,6 +31,10 @@ class SiteConfig(BaseModel):
     max_depth: int = 8
     prevent_outside: bool = True
     exclude_dirs: List[str] = []
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 class IngestRequest(BaseModel):
@@ -40,6 +45,10 @@ class IngestRequest(BaseModel):
     user_id: Optional[str] = None  # For multi-user support
     max_depth: int = 8  # For recursive loaders
     collection_id: Optional[str] = None  # If None, a new one will be generated
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 class IngestResponse(BaseModel):
@@ -48,6 +57,10 @@ class IngestResponse(BaseModel):
     document_count: int
     status: str
     message: str
+    
+    model_config = {
+        "extra": "forbid"
+    }
 
 
 # Predefined site configurations
@@ -345,11 +358,28 @@ def ingest_documents(docs: List[Document], collection_name: str, llm: Optional[L
     
     record_manager.create_schema()
     
+    # Initialize HTML to Markdown model if not already initialized
+    try:
+        # Use CPU by default, can be overridden with environment variable
+        device = os.environ.get("HTML_TO_MD_DEVICE", "cpu")
+        initialize_model(device)
+        logger.info(f"HTML to Markdown model initialized on {device}")
+    except Exception as e:
+        logger.warning(f"Failed to initialize HTML to Markdown model: {e}")
+    
     # Split documents
     docs_transformed = text_splitter.split_documents(docs)
     
     # Apply verification and filtering
     docs_original_count = len(docs_transformed)
+    
+    # Convert HTML to Markdown before verification
+    try:
+        logger.info("Converting HTML to Markdown...")
+        docs_transformed = process_documents(docs_transformed)
+        logger.info("HTML to Markdown conversion completed")
+    except Exception as e:
+        logger.warning(f"Error during HTML to Markdown conversion: {e}")
     
     # Apply advanced verification if LLM is provided
     verified_docs = []
@@ -384,8 +414,15 @@ def ingest_documents(docs: List[Document], collection_name: str, llm: Optional[L
     # Get document count
     if isinstance(vectorstore, Weaviate):
         try:
-            num_vecs = vectorstore.client.query.aggregate(collection_name).with_meta_count().do()
-            doc_count = num_vecs["data"]["Aggregate"][collection_name][0]["meta"]["count"]
+            if hasattr(vectorstore.client, 'collections'):
+                # New Weaviate v4 API
+                collection = vectorstore.client.collections.get(collection_name)
+                num_vecs = collection.aggregate.over_all().with_meta_count().do()
+                doc_count = num_vecs['meta_count']
+            else:
+                # Old Weaviate v3 API
+                num_vecs = vectorstore.client.query.aggregate(collection_name).with_meta_count().do()
+                doc_count = num_vecs["data"]["Aggregate"][collection_name][0]["meta"]["count"]
         except Exception as e:
             logger.error(f"Error getting document count: {e}")
             doc_count = len(docs_transformed)

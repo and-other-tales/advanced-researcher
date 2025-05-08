@@ -26,15 +26,12 @@ if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ] || [ -n "$GOOGLE_API_
     echo "Using environment variables from container environment"
 fi
 
-# Create .env file if it doesn't exist and we don't have environment variables set
-if [ ! -f /app/.env ] && [ "$HAS_ENV_VARS" = "false" ]; then
-    echo "No environment variables found. Creating .env file from .env.example"
-    if [ -f /app/.env.example ]; then
-        cp /app/.env.example /app/.env
-        echo "Created .env file from template. Review and adjust if needed."
-    else
-        echo "Warning: No environment variables found and no .env.example file exists"
-    fi
+# Use only OS environment variables, no .env fallback
+if [ "$HAS_ENV_VARS" = "false" ]; then
+    echo "WARNING: No API keys set in environment variables"
+    echo "NOT creating .env file as fallback - using OS environment variables only"
+    # Create empty .env to prevent fallback attempts
+    touch /app/.env
 fi
 
 # Check if environment is properly configured

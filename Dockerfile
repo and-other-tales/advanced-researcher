@@ -1,3 +1,15 @@
+# Stage 1: Build frontend server
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Install serve - a static server for Next.js apps
+RUN npm install -g serve
+
+# Copy pre-built frontend files
+COPY frontend/out /app/frontend
+
+# Stage 2: Set up Python backend with frontend files
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -30,8 +42,8 @@ RUN mkdir -p /data && chmod 777 /data
 COPY backend/ ./backend/
 # Create static directory if not exists
 RUN mkdir -p ./backend/static
-# Copy frontend/out/ directory
-COPY frontend/out/ ./backend/static/
+# Copy pre-built frontend files from frontend-builder stage
+COPY --from=frontend-builder /app/frontend ./backend/static/
 COPY main.py docker-entrypoint.sh .env.example ./
 
 # Ensure entrypoint is executable

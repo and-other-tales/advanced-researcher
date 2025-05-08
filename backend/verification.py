@@ -20,7 +20,7 @@ from langchain_core.language_models import LanguageModelLike
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from langchain_core.runnables import chain, RunnablePassthrough, RunnableLambda, RunnableBranch
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,15 @@ class GradeDocuments(BaseModel):
     reason: str = Field(
         description="Explanation for why the document is or is not relevant"
     )
+    
+    @field_validator('binary_score')
+    @classmethod
+    def validate_binary_score(cls, v: str) -> str:
+        """Validate that binary score is yes or no."""
+        v_lower = v.lower()
+        if v_lower not in ["yes", "no"]:
+            raise ValueError("binary_score must be 'yes' or 'no'")
+        return v_lower
 
 
 class GradeHallucinations(BaseModel):
@@ -46,8 +55,17 @@ class GradeHallucinations(BaseModel):
     )
     unsupported_statements: List[str] = Field(
         description="List of statements in the answer that are not supported by the provided facts",
-        default=[]
+        default_factory=list
     )
+    
+    @field_validator('binary_score')
+    @classmethod
+    def validate_binary_score(cls, v: str) -> str:
+        """Validate that binary score is yes or no."""
+        v_lower = v.lower()
+        if v_lower not in ["yes", "no"]:
+            raise ValueError("binary_score must be 'yes' or 'no'")
+        return v_lower
 
 
 class GradeAnswer(BaseModel):
@@ -60,8 +78,17 @@ class GradeAnswer(BaseModel):
     )
     missing_information: List[str] = Field(
         description="List of aspects of the question that were not addressed in the answer",
-        default=[]
+        default_factory=list
     )
+    
+    @field_validator('binary_score')
+    @classmethod
+    def validate_binary_score(cls, v: str) -> str:
+        """Validate that binary score is yes or no."""
+        v_lower = v.lower()
+        if v_lower not in ["yes", "no"]:
+            raise ValueError("binary_score must be 'yes' or 'no'")
+        return v_lower
 
 
 def create_retrieval_grader(llm: LanguageModelLike, prompt_variant: str = "standard"):

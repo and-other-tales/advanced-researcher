@@ -20,6 +20,8 @@ from langchain_community.document_loaders import RecursiveUrlLoader, SitemapLoad
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 
+from backend.html_to_markdown import process_documents, initialize_model, html_to_markdown
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -83,6 +85,18 @@ class DatasetProgress(BaseModel):
     splits: Optional[Dict[str, int]] = None
 
 
+def html_to_markdown_extractor(html: str) -> str:
+    """Extract text from HTML and convert to Markdown format using ReaderLM model."""
+    try:
+        # Convert HTML to Markdown using ReaderLM
+        return html_to_markdown(html)
+    except Exception as e:
+        logger.warning(f"Error in HTML to Markdown conversion: {e}")
+        # Fallback to simple extraction if model fails
+        soup = BeautifulSoup(html, "lxml")
+        return re.sub(r"\n\n+", "\n\n", soup.text).strip()
+
+
 class DatasetCreator:
     """Creator for Hugging Face datasets from web sources."""
     
@@ -91,6 +105,15 @@ class DatasetCreator:
         self.progress_registry = {}
         self.datasets_dir = os.path.join(DATA_DIR, "datasets")
         os.makedirs(self.datasets_dir, exist_ok=True)
+        
+        # Initialize HTML to Markdown model
+        try:
+            # Use CPU by default, can be overridden with environment variable
+            device = os.environ.get("HTML_TO_MD_DEVICE", "cpu")
+            initialize_model(device)
+            logger.info(f"HTML to Markdown model initialized on {device}")
+        except Exception as e:
+            logger.warning(f"Failed to initialize HTML to Markdown model: {e}")
     
     def _get_dataset_dir(self, dataset_id: str) -> str:
         """Get the directory path for a dataset."""
@@ -189,10 +212,18 @@ class DatasetCreator:
             # Determine if we need to use Sitemap or recursive crawling
             if progress.url.endswith(".xml") or "sitemap" in progress.url.lower():
                 # Use SitemapLoader for sitemap URLs
+                # Use the appropriate extractor but always apply HTML to Markdown conversion
+                if progress.url.startswith("https://www.legislation.gov.uk"):
+                    # For legislation.gov.uk, use specialized extractor first
+                    parsing_function = lambda html: html_to_markdown_extractor(self.legislation_extractor(html))
+                else:
+                    # For other sites, use direct HTML to Markdown conversion
+                    parsing_function = html_to_markdown_extractor
+                
                 loader = SitemapLoader(
                     progress.url,
                     filter_urls=[url.split('/sitemap')[0]],
-                    parsing_function=self.legislation_extractor if progress.url.startswith("https://www.legislation.gov.uk") else None,
+                    parsing_function=parsing_function,
                 )
                 docs = loader.load()
                 
@@ -215,7 +246,13 @@ class DatasetCreator:
                         )
             else:
                 # Use RecursiveUrlLoader for regular URLs
-                extractor = self.legislation_extractor if progress.url.startswith("https://www.legislation.gov.uk") else None
+                # Choose the appropriate extractor but ensure HTML to Markdown conversion
+                if progress.url.startswith("https://www.legislation.gov.uk"):
+                    # For legislation.gov.uk, use specialized extractor first
+                    extractor = lambda html: html_to_markdown_extractor(self.legislation_extractor(html))
+                else:
+                    # For other sites, use direct HTML to Markdown conversion
+                    extractor = html_to_markdown_extractor
                 
                 loader = RecursiveUrlLoader(
                     url=progress.url,
