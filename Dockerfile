@@ -3,14 +3,15 @@ FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Install serve - a static server for Next.js apps
-RUN npm install -g serve
+# Copy frontend source (we'll build it here to ensure it's correctly built)
+COPY frontend/ ./
 
-# Copy pre-built frontend files
-COPY frontend/out /app/frontend
+# Install dependencies and build the Next.js app
+RUN npm install || yarn install
+RUN npm run build || yarn build
 
-# Stage 2: Set up Python backend with frontend files
-FROM python:3.10-slim
+# Stage 2: Set up Python backend
+FROM python:3.10-slim AS backend-builder
 
 WORKDIR /app
 
@@ -32,7 +33,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Install additional dependencies for new features if not already in requirements.txt
+# Install additional dependencies for new features
 RUN pip install --no-cache-dir lxml
 
 # Create data directory for persistent storage
@@ -40,35 +41,47 @@ RUN mkdir -p /data && chmod 777 /data
 
 # Copy application code
 COPY backend/ ./backend/
-# Create static directory if not exists
-RUN mkdir -p ./backend/static
-# Copy pre-built frontend files from frontend-builder stage
-COPY --from=frontend-builder /app/frontend ./backend/static/
-# Copy Next.js build ID files to root of static directory for proper static asset resolution
-RUN if [ -d ./backend/static/_next/static/*/ ]; then \
-    BUILD_ID=$(ls ./backend/static/_next/static/ | grep -v "chunks\|css\|media" | head -n 1); \
-    if [ -n "$BUILD_ID" ]; then \
-        cp -r ./backend/static/_next/static/$BUILD_ID/* ./backend/static/; \
-    fi; \
-fi
-COPY main.py docker-entrypoint.sh .env.example ./
-
-# Ensure entrypoint is executable
-RUN chmod +x /app/docker-entrypoint.sh
+COPY main.py ./
 
 # Ensure utilities directories exist
 RUN mkdir -p backend/utils
 RUN touch backend/utils/__init__.py
-RUN touch backend/static/__init__.py
+
+# Stage 3: Final image with Nginx
+FROM nginx:alpine
+
+# Copy Nginx configuration
+COPY _scripts/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy frontend from builder stage
+COPY --from=frontend-builder /app/out /usr/share/nginx/html
+
+# Create directory for backend
+RUN mkdir -p /app
+
+# Copy backend from builder stage
+COPY --from=backend-builder /app /app
+COPY docker-entrypoint.sh .env.example /app/
+
+# Make entrypoint script executable
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Default environment variables
 ENV DATA_MOUNT_PATH=/data
-ENV HOST=0.0.0.0
-ENV PORT=8080
+ENV BACKEND_HOST=localhost
+ENV BACKEND_PORT=8000
+ENV FRONTEND_PORT=3000
+ENV NGINX_PORT=8080
 ENV PYTHONUNBUFFERED=1
+
+# Install supervisor to manage processes
+RUN apk add --no-cache supervisor python3
+
+# Copy supervisor configuration
+COPY _scripts/supervisord.conf /etc/supervisord.conf
 
 # Expose port
 EXPOSE 8080
 
-# Use entrypoint script
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Start supervisor as the entrypoint
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

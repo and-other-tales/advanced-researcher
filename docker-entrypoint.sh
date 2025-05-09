@@ -6,10 +6,12 @@ echo "======================================"
 echo "Advanced Researcher - Docker Entrypoint"
 echo "======================================"
 
+# This script runs before supervisord starts the services
+# It sets up the environment and ensures all required files exist
+
 # Check if essential directories exist
 mkdir -p /data
 mkdir -p /app/backend/utils
-mkdir -p /app/backend/static
 
 # Ensure required Python modules exist
 if [ ! -f /app/backend/utils/__init__.py ]; then
@@ -73,21 +75,26 @@ if [ ! -d "$DATA_MOUNT_PATH" ]; then
     chmod 777 "$DATA_MOUNT_PATH"
 fi
 
-# Set correct working directory
-cd /app
+# Update Nginx configuration if custom ports are specified
+if [ -n "$NGINX_PORT" ] && [ "$NGINX_PORT" != "8080" ]; then
+    echo "Updating Nginx to listen on port $NGINX_PORT"
+    sed -i "s/listen 8080/listen $NGINX_PORT/g" /etc/nginx/conf.d/default.conf
+fi
+
+if [ -n "$BACKEND_PORT" ] && [ "$BACKEND_PORT" != "8000" ]; then
+    echo "Updating Nginx to proxy to backend port $BACKEND_PORT"
+    sed -i "s/127.0.0.1:8000/127.0.0.1:$BACKEND_PORT/g" /etc/nginx/conf.d/default.conf
+    # Also update supervisord configuration
+    sed -i "s/PORT=8000/PORT=$BACKEND_PORT/g" /etc/supervisord.conf
+fi
 
 # Print startup information
-echo "Starting application with configuration:"
-echo "- Host: $HOST"
-echo "- Port: $PORT"
-echo "- Data path: $DATA_MOUNT_PATH"
+echo "Advanced Researcher is configured with:"
+echo "- Frontend files served by Nginx on port $NGINX_PORT"
+echo "- Backend API running on port $BACKEND_PORT"
+echo "- Data directory at $DATA_MOUNT_PATH"
 echo "- Local mode: $USE_LOCAL"
 
-# Run the application with the correct command
-if [ "$USE_LOCAL" = "true" ]; then
-    echo "Starting local application (backend.local_main)"
-    exec python main.py
-else
-    echo "Starting standard application (main.py)"
-    exec python main.py
-fi
+# This script is now used for setup only, not for launching the application
+# Supervisord will start both Nginx and the Python backend
+echo "Setup completed. Starting services with supervisord..."
