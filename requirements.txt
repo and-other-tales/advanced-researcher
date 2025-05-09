@@ -14,7 +14,7 @@ langchain_google_genai==2.1.4
 langchain_ollama==0.3.2
 langchain_openai==0.3.16
 langserve==0.3.1
-langsmith==0.3.42
+langsmith==0.3.26
 pydantic==2.11.4
 Requests==2.32.3
 sse_starlette==2.1.0

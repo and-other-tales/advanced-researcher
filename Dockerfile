@@ -3,12 +3,18 @@ FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Copy frontend source (we'll build it here to ensure it's correctly built)
+# Copy package.json and yarn.lock first for better caching
+COPY frontend/package.json frontend/yarn.lock* ./
+
+# Install dependencies
+# Use yarn with frozen lockfile for more reliable builds and extended timeout
+RUN yarn install --frozen-lockfile || (yarn cache clean && yarn install --network-timeout 600000)
+
+# Copy the rest of the frontend source
 COPY frontend/ ./
 
-# Install dependencies and build the Next.js app
-RUN npm install || yarn install
-RUN npm run build || yarn build
+# Build the application
+RUN yarn build
 
 # Stage 2: Set up Python backend
 FROM python:3.10-slim AS backend-builder
@@ -29,9 +35,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements file first for better caching
 COPY requirements.txt ./
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with retry mechanism
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt || (pip cache purge && pip install --no-cache-dir -r requirements.txt --timeout 300)
 
 # Install additional dependencies for new features
 RUN pip install --no-cache-dir lxml

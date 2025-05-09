@@ -30,7 +30,7 @@
     "framer-motion": "^11.0.3",
     "graphql": "^16.8.1",
     "highlight.js": "^11.9.0",
-    "langsmith": "^0.3.42",
+    "langsmith": "^0.3.26",
     "marked": "^9.1.5",
     "next": "15.3.0",
     "postcss": "8.4.35",
