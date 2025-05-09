@@ -169,15 +169,12 @@ if os.path.exists(static_path):
 # Check for the landing page
 landing_page = os.path.join(static_path, "index.html")
 
-# First check if we have a frontend build directory
-if os.path.exists(frontend_path) and os.path.exists(os.path.join(frontend_path, "index.html")):
-    app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
-    
-    @app.get("/")
-    async def serve_frontend_index():
-        """Serve the frontend index.html."""
-        index_path = os.path.join(frontend_path, "index.html")
-        return FileResponse(index_path)
+# Check if we have static files from the Docker build
+if os.path.exists(static_path) and os.path.exists(os.path.join(static_path, "index.html")):
+    app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
+# Otherwise check if we have a frontend build directory
+elif os.path.exists(frontend_path) and os.path.exists(os.path.join(frontend_path, "index.html")):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 # If we have a landing page in the static directory, serve that
 elif os.path.exists(landing_page):
     @app.get("/")

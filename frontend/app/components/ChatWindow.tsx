@@ -89,7 +89,7 @@ export function ChatWindow(props: { conversationId: string }) {
     }
     
     setLlmIsLoading(false);
-  }, []);
+  }, [searchParams]);
   
   // Update document and site counts based on research depth level
   const updateDocumentAndSiteCounts = (depthLevel: string) => {
@@ -532,7 +532,7 @@ export function ChatWindow(props: { conversationId: string }) {
             target="_blank"
             className="text-white flex items-center"
           >
-            <img src="/images/github-mark.svg" className="h-4 mr-1" />
+            <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub logo" />
             <span>View Source</span>
           </a>
         </footer>

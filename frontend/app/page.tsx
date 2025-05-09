@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { ChatWindow } from "./components/ChatWindow";
 import { ToastContainer } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 import { ChakraProvider } from "@chakra-ui/react";
 
@@ -38,7 +38,9 @@ export default function Home() {
     return (
       <ChakraProvider>
         <ToastContainer />
-        <ChatWindow conversationId={uuidv4()}></ChatWindow>
+        <Suspense fallback={<div>Loading chat...</div>}>
+          <ChatWindow conversationId={uuidv4()}></ChatWindow>
+        </Suspense>
       </ChakraProvider>
     );
   } catch (error) {

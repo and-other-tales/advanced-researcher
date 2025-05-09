@@ -69,6 +69,7 @@ else
 fi
 
 # Check if data directory is mounted
+DATA_MOUNT_PATH=${DATA_MOUNT_PATH:-"/data"}
 if [ ! -d "$DATA_MOUNT_PATH" ]; then
     echo "Creating data directory at $DATA_MOUNT_PATH"
     mkdir -p "$DATA_MOUNT_PATH"
@@ -88,13 +89,19 @@ if [ -n "$BACKEND_PORT" ] && [ "$BACKEND_PORT" != "8000" ]; then
     sed -i "s/PORT=8000/PORT=$BACKEND_PORT/g" /etc/supervisord.conf
 fi
 
+# Set default values for environment variables
+NGINX_PORT=${NGINX_PORT:-"8080"}
+BACKEND_PORT=${BACKEND_PORT:-"8080"}
+USE_LOCAL=${USE_LOCAL:-"true"}
+
 # Print startup information
 echo "Advanced Researcher is configured with:"
-echo "- Frontend files served by Nginx on port $NGINX_PORT"
+echo "- Frontend files served on port $NGINX_PORT"
 echo "- Backend API running on port $BACKEND_PORT"
 echo "- Data directory at $DATA_MOUNT_PATH"
 echo "- Local mode: $USE_LOCAL"
 
-# This script is now used for setup only, not for launching the application
-# Supervisord will start both Nginx and the Python backend
-echo "Setup completed. Starting services with supervisord..."
+# Start the backend application
+echo "Setup completed. Starting the backend application..."
+cd /app
+python main.py
